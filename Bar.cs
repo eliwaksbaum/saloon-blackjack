@@ -1,7 +1,7 @@
 using Algiers;
 using System;
 
-public class Bar
+public static class Bar
 {
     class Drink : GameObject
     {
