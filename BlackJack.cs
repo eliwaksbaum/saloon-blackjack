@@ -17,6 +17,11 @@ public class BlackJack
     static State inOrOutState = new State();
     static State hitOrStayState = new State();
     public static State blackjackState = inOrOutState.Compose(hitOrStayState);
+    
+    static Command hit;
+    static Command stay;
+    static Command play;
+    static Command leave;
 
     public string instructions;
     State saloonState;
@@ -25,10 +30,10 @@ public class BlackJack
 
     public static void AddCommands(World world)
     {
-        world.AddIntransitiveCommand("hit", null, hitOrStayState);
-        world.AddIntransitiveCommand("stay", null, hitOrStayState);
-        world.AddIntransitiveCommand("play", null, inOrOutState);
-        world.AddIntransitiveCommand("leave", null, inOrOutState);
+        hit = world.AddIntransitiveCommand("hit", null, hitOrStayState);
+        stay = world.AddIntransitiveCommand("stay", null, hitOrStayState);
+        play = world.AddIntransitiveCommand("play", null, inOrOutState);
+        leave = world.AddIntransitiveCommand("leave", null, inOrOutState);
     }
 
     public BlackJack(World _world)
@@ -37,10 +42,10 @@ public class BlackJack
         player = world.player;
         saloonState = world.player.state;
 
-        world.SetIntransitiveCommand("hit", Hit);
-        world.SetIntransitiveCommand("stay", Stay);
-        world.SetIntransitiveCommand("play", Start);
-        world.SetIntransitiveCommand("leave", Leave);
+        world.SetIntransitiveCommand(hit, Hit);
+        world.SetIntransitiveCommand(stay, Stay);
+        world.SetIntransitiveCommand(play, Start);
+        world.SetIntransitiveCommand(leave, Leave);
     }
 
     string Hit()
