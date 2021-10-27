@@ -20,6 +20,7 @@ public class BlackJack
 
     public string instructions;
     State saloonState;
+    World world;
     Player player;
 
     public static void AddCommands(World world)
@@ -30,8 +31,9 @@ public class BlackJack
         world.AddIntransitiveCommand("leave", null, inOrOutState);
     }
 
-    public BlackJack(World world)
+    public BlackJack(World _world)
     {
+        world = _world;
         player = world.player;
         saloonState = world.player.state;
 
@@ -116,53 +118,55 @@ public class BlackJack
         }
         else
         {
-            bet = TakeBet();
-            dealt = new int[13];
-            dealer = new List<int>();
-            better = new List<int>();
-
-            dealer.Add(Deal());
-            dealer.Add(Deal());
-            better.Add(Deal());
-            better.Add(Deal());
-
-            string message = "The dealer shuffles and deals.\n" + Announce();
-            if (playerScore == 21)
-            {
-                message += "\nBlackjack! " + PayOut(true) + "\nPlay again or leave?";
-            }
-            else
-            {
-                player.state = hitOrStayState;
-                message += "\nWould you like to hit or stay?";
-            }
-            return message;
+            world.GoRaw(TakeBet);
+            return "How much would you like to bet?";
         }
     }
 
-    int TakeBet()
+    string FirstDeal()
     {
-        int bet = 0;
-        Console.WriteLine("\nHow much would you like to bet?\n");
-        bool goodBet = false;
-        while (!goodBet)
-            if (int.TryParse(Console.ReadLine(), out bet) && bet > 0)
+        string message = "\nYou bet " + bet + "Ð.\nThe dealer shuffles and deals.\n";
+
+        dealt = new int[13];
+        dealer = new List<int>();
+        better = new List<int>();
+
+        dealer.Add(Deal());
+        dealer.Add(Deal());
+        better.Add(Deal());
+        better.Add(Deal());
+
+        message += Announce();
+        if (playerScore == 21)
+        {
+            message += "\nBlackjack! " + PayOut(true) + "\nPlay again or leave?";
+        }
+        else
+        {
+            player.state = hitOrStayState;
+            message += "\nWould you like to hit or stay?";
+        }
+        return message;
+    }
+
+    string TakeBet(string input)
+    {
+        if (int.TryParse(input, out bet) && bet > 0)
+        {
+            if (bet <= player.GetCounter("money"))
             {
-                if (bet <= player.GetCounter("money"))
-                {
-                    goodBet = true;
-                }
-                else
-                {
-                    Console.WriteLine("\nYou only have " + player.GetCounter("money") + "D to wager.\n");
-                }
+                world.GoStandard();
+                return FirstDeal();
             }
             else
             {
-                Console.WriteLine("\nPlease type a number greater than 0 for your bet.\n");
+                return "You only have " + player.GetCounter("money") + "D to wager.";
             }
-        Console.WriteLine("\nYou bet " + bet + "Ð.");
-        return bet;
+        }
+        else
+        {
+            return "Please type a number greater than 0 for your bet.";
+        }
     }
 
     string DealersPlay()
