@@ -47,9 +47,43 @@ namespace Algiers
         {
             foreach (Command cmd in Commands)
             {
-                if (newcmd.Equals(cmd))
+                if (newcmd.Overlaps(cmd))
                 {
-                    throw new Exception("A Command with phrase \"" + cmd.Phrase + "\" and overlapping validity already exists.");
+                    string phrase = cmd.Phrase;
+                    int length = cmd.Aliases != null ? cmd.Aliases.Length + 1 : 1;
+                    string[] phrases = new string[length];
+                    phrases[0] = phrase;
+
+                    string newphrase = newcmd.Phrase;
+                    int newlength = newcmd.Aliases != null ? newcmd.Aliases.Length + 1 : 1;
+                    string[] newphrases = new string[newlength];
+                    newphrases[0] = newphrase;
+
+                    if (phrases.Length > 1)
+                    {
+                        for (int i = 1; i < phrases.Length; i++)
+                        {
+                            phrases[i] = cmd.Aliases[i-1];
+                        }
+                    }
+                    if (newphrases.Length > 1)
+                    {
+                        for (int i = 1; i < newphrases.Length; i++)
+                        {
+                            newphrases[i] = newcmd.Aliases[i-1];
+                        }
+                    }
+
+                    foreach(string s in phrases)
+                    {
+                        foreach(string newS in newphrases)
+                        {
+                            if (s == newS)
+                            {
+                                throw new Exception("A Command with the phrase or alias \"" + s + "\" with overlapping validity already exists.");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -96,7 +130,7 @@ namespace Algiers
         {
             foreach(Command cmd in commands)
             {
-                if (player.state.IsWithin(cmd.Validity))
+                if (player.State.IsWithin(cmd.Validity))
                 {
                     if (phrase == cmd.Phrase)
                     {
@@ -144,17 +178,20 @@ namespace Algiers
         public static State All = new State(~0);
 
         int value;
-        public int code => value;
+        public int Code => value;
+        public bool isPrime;
 
         public State()
         {
             value = counter;
             counter <<= 1;
+            isPrime = true;
         }
 
         State(int _value)
         {
             value = _value;
+            isPrime = false;
         }
 
         public State Compose(State other)
@@ -176,7 +213,23 @@ namespace Algiers
     //PLAYER
     public class Player
     {
-        public State state;
+        State state;
+        public State State
+        {
+            get => state;
+            set
+            {
+                if (value.isPrime)
+                {
+                    state = value;
+                }
+                else
+                {
+                    throw new Exception("Player.State can only be assigned prime States (no compositions).");
+                }
+            }
+        }
+
         public Room current_room;
 
         Dictionary<string, GameObject> inventory = new Dictionary<string, GameObject>();
@@ -478,7 +531,7 @@ namespace Algiers
         {
             id = _id;
             type = _type;
-            validity = state.code;
+            validity = state.Code;
             missingTargetError = _missingTargetError;
             dipreps = _dipreps;
             aliases = _aliases;
@@ -503,7 +556,7 @@ namespace Algiers
         public bool Overlaps(Command other)
         {
             int intersection = this.validity & other.validity;
-            return (this.id == other.id) && (intersection != 0);
+            return intersection != 0;
         }
     }
 

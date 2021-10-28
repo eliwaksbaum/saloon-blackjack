@@ -40,7 +40,7 @@ public class BlackJack
     {
         world = _world;
         player = world.player;
-        saloonState = world.player.state;
+        saloonState = world.player.State;
 
         world.SetIntransitiveCommand(hit, Hit);
         world.SetIntransitiveCommand(stay, Stay);
@@ -55,7 +55,7 @@ public class BlackJack
         string ending;
         if (playerScore > 21)
         {
-            player.state = inOrOutState;
+            player.State = inOrOutState;
             ending = "You're over 21!\n" + PayOut(false) + "\nPlay again or leave?";
         }
         else
@@ -68,7 +68,7 @@ public class BlackJack
     string Stay()
     {
         string dealerPlay = DealersPlay();
-        player.state = inOrOutState;
+        player.State = inOrOutState;
         if (dealerScore > 21)
         {
             return dealerPlay + "The dealer's over 21!\n" + PayOut(true) + "\nPlay again or leave?";
@@ -91,7 +91,7 @@ public class BlackJack
 
     string Leave()
     {
-        player.state = saloonState;
+        player.State = saloonState;
         return "You stand up from the game table. You've had enough BlackJack for now.";
     }
 
@@ -118,7 +118,7 @@ public class BlackJack
     {
         if (player.GetCounter("money") == 0)
         {
-            player.state = saloonState;
+            player.State = saloonState;
             return "You gotta have money to play BlackJack.";
         }
         else
@@ -148,7 +148,7 @@ public class BlackJack
         }
         else
         {
-            player.state = hitOrStayState;
+            player.State = hitOrStayState;
             message += "\nWould you like to hit or stay?";
         }
         return message;

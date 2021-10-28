@@ -14,7 +14,7 @@ public class Saloon
         world.start = "Welcome to the Saloon";
 
         Player player = world.player;
-        player.state = saloonState;
+        player.State = saloonState;
         player.AddCounter("money");
 
         string PlayBlackJack()
@@ -27,13 +27,13 @@ public class Saloon
         
         string GoBar()
         {
-            player.state = barState;
+            player.State = barState;
             return "You sit at the bar.";
         }
         world.AddIntransitiveCommand("bar", GoBar, saloonState);
         string LeaveBar()
         {
-            player.state = saloonState;
+            player.State = saloonState;
             return "You get up from the bar.";
         }
         world.AddIntransitiveCommand("leave bar", LeaveBar, barState);
