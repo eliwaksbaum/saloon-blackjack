@@ -36,9 +36,9 @@ public class Saloon
             player.state = saloonState;
             return "You get up from the bar.";
         }
-        world.AddIntransitiveCommand("leavebar", LeaveBar, barState);
+        world.AddIntransitiveCommand("leave bar", LeaveBar, barState);
         
-        world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState);
+        world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState, new string[]{"look around"});
         world.AddIntransitiveCommand("inv", CMD.Inv(player), State.All);
 
         world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "What what?", preps: new string[]{"is"});
@@ -86,7 +86,15 @@ public class Saloon
         player.AddToInventory(wallet);
         player.IncrementCounter("money", 10);
 
-        Room saloon = world.AddRoom("saloon");        
+        Room saloon = world.AddRoom("saloon");     
+
+        Person bob = saloon.AddObject<Person>("bob");
+        string BobGive(string gift)
+        {
+            player.RemoveFromInventory(player.GetObject(gift));
+            return "Thanks!";
+        }
+        bob.SetDitransitiveCommand("give", BobGive);
         
         player.current_room = saloon;
         return world;

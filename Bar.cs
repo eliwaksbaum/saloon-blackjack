@@ -53,12 +53,16 @@ public static class Bar
                 drink.description = "A glass of Mexican tequila.";
                 break;
             case ("gin"):
-                drink.price = 6;
+                drink.price = 5;
                 drink.description = "A glass of imported gin.";
                 break;
             case ("moonshine"):
-                drink.price = 15;
-                drink.description = "A whole bottle of ... you're not sure what. It reeks, though.";
+                drink.price = 8;
+                drink.description = "A glass of ... you're not sure what. It reeks, though.";
+                break;
+            case ("bottle of whiskey"):
+                drink.price = 14;
+                drink.description = "A whole bottle of aged amber whiskey";
                 break;
             default:
                 break;
