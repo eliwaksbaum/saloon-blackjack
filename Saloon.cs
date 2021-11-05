@@ -39,7 +39,26 @@ public class Saloon
         world.AddIntransitiveCommand("leave bar", LeaveBar, barState);
         
         world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState, new string[]{"look around"});
-        world.AddIntransitiveCommand("inv", CMD.Inv(player), State.All);
+        
+        string Inv()
+        {
+            string inv = CMD.Inv(player)();
+            int money = player.GetCounter("money");
+
+            if (money <= 0)
+            {
+                return inv;
+            }
+            else if (inv == "Your inventory is empty.")
+            {
+                return money + "Ð";
+            }
+            else
+            {
+                return inv + ", " + money + "Ð";
+            }
+        }
+        world.AddIntransitiveCommand("inv", Inv, State.All);
 
         world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "What what?", preps: new string[]{"is"});
         world.AddTransitiveCommand("who", CMD.Who(player), State.All, "Who is who?", preps: new string[]{"is"});
@@ -75,15 +94,6 @@ public class Saloon
         world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
         world.AddDitransitiveCommand("give", CMD.Give(player), notPlayingState, "Give what?", new string[]{"to"});
 
-        GameObject wallet = new GameObject("wallet");
-        string DisplayMoney()
-        {
-            int money = player.GetCounter("money");
-            string ending = money == 0 ? " There's nothing in it, you're broke." : " You've got " + money + "Ð in it.";
-            return "A sturdy leather wallet." + ending;
-        }
-        wallet.SetTransitiveCommand("what", DisplayMoney);
-        player.AddToInventory(wallet);
         player.IncrementCounter("money", 10);
 
         Room saloon = world.AddRoom("saloon");     
