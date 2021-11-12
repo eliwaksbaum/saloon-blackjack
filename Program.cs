@@ -1,5 +1,6 @@
 ﻿using System;
 using Algiers;
+using Algiers.StartKit;
 
 namespace Saloon_Blackjack
 {
@@ -8,18 +9,7 @@ namespace Saloon_Blackjack
         static void Main(string[] args)
         {
             World world = Saloon.SetWorld();
-            Parser parser = new Parser(world);
-
-            Console.WriteLine("");
-            Console.WriteLine(world.start);
-            while (!world.done)
-            {
-                Console.WriteLine("");
-                string response = parser.Parse(Console.ReadLine(), world.Mode);
-                Console.WriteLine("");
-                Console.WriteLine(response);
-            }
-            Console.ReadLine();
+            ConsoleKit.Loop(world);
         }
     }
 }

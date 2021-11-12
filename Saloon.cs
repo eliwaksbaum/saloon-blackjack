@@ -91,6 +91,20 @@ public class Saloon
         world.AddTransitiveCommand("drink", Drink(), State.All, "Drink what?");
         world.AddTransitiveCommand("buy", Bar.Buy(player), barState, "Buy what?");
 
+        string Toss(string item)
+        {
+            if (player.InInventory(item))
+            {
+                player.GetObject(item).Delete();
+                return "You chuck the " + item;
+            }
+            else
+            {
+                return "you don't have a " + item + "in your inventory";
+            }
+        }
+        world.AddTransitiveCommand("toss", Toss, State.All, "Toss what?");
+
         world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
         world.AddDitransitiveCommand("give", CMD.Give(player), notPlayingState, "Give what?", new string[]{"to"});
 
@@ -98,13 +112,29 @@ public class Saloon
 
         Room saloon = world.AddRoom("saloon");     
 
-        Person bob = saloon.AddObject<Person>("bob");
+        Person bob = new Person("bob");
         string BobGive(string gift)
         {
             player.RemoveFromInventory(player.GetObject(gift));
             return "Thanks!";
         }
         bob.SetDitransitiveCommand("give", BobGive);
+        saloon.AddObject(bob);
+
+        Chest box = new Chest("box");
+        saloon.AddObject(box);
+
+        GameObject bot = new GameObject("bot");
+        string BotTake()
+        {
+            player.AddToInventory(bot);
+            return "u take the bot from the box";
+        }
+        bot.SetTransitiveCommand("take", BotTake);
+        box.AddObject(bot);
+
+        //box of matches
+        //3 cats
         
         player.current_room = saloon;
         return world;

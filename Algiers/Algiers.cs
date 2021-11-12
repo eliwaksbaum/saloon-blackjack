@@ -7,14 +7,49 @@ namespace Algiers
     //ELEMENTS
     //////////
 
-    //WORLD
-    public class World
+    public abstract class Element
     {
+        protected Element parent;
+        public Element Parent => parent;
+
+        protected List<Element> children = new List<Element>();
+        public List<Element> Children => children;
+
+        protected virtual void Remove(Element target)
+        {
+            children.Remove(target);
+        }
+
+        public void Delete()
+        {
+            parent.Remove(this);
+        }
+
+        protected void Adopt(Element child)
+        {
+            if (child.parent != null)
+            {
+                child.parent.children.Remove(child);
+            }
+            child.parent = this;
+            children.Add(child);
+        }
+    }
+
+    //WORLD
+    public class World : Element
+    {
+        protected override void Remove(Element target)
+        {
+            base.Remove(target);
+            rooms.Remove(((Room)target).ID);
+        }
+
         public bool done = false;
         public string start;
         public string instructions;
+        
         public Player player = new Player();
-        public string inputChar = ">";
 
         Parser.Mode mode = Parser.Mode.Standard;
         public Parser.Mode Mode => mode;
@@ -29,6 +64,13 @@ namespace Algiers
         }
 
         Dictionary<string, Room> rooms = new Dictionary<string, Room>();
+        public Room AddRoom(string roomID)
+        {
+            Room newRoom = new Room(roomID);
+            Adopt(newRoom);
+            rooms.Add(roomID, newRoom);
+            return newRoom;
+        }
         public Room GetRoom(string id)
         {
             return rooms[id];
@@ -163,15 +205,9 @@ namespace Algiers
         {
             return responsesD[cmd];
         }
-        
-        public Room AddRoom(string roomID)
-        {
-            Room newRoom = new Room(roomID);
-            rooms.Add(roomID, newRoom);
-            return newRoom;
-        }
     }
 
+    //STATE
     public class State
     {
         static int counter = 1;
@@ -211,8 +247,13 @@ namespace Algiers
     }
 
     //PLAYER
-    public class Player
+    public class Player : Element
     {
+        protected override void Remove(Element target)
+        {
+            RemoveFromInventory((GameObject) target);
+        }
+
         State state;
         public State State
         {
@@ -300,37 +341,26 @@ namespace Algiers
 
         public void AddToInventory(GameObject target)
         {
+            Adopt(target);
             inventory.Add(target.ID, target);
-        }
-
-        public void AddToInventoryFrom(GameObject target, IOrigin origin)
-        {
-            if (origin.Contains(target))
-            {
-                inventory.Add(target.ID, target);
-                origin.RemoveObject(target);
-            }
         }
         public void RemoveFromInventory(GameObject target)
         {
             inventory.Remove(target.ID);
+            base.Remove(target);
         }
     }
 
-    //ORIGIN
-    public interface IOrigin
-    {
-        void RemoveObject(GameObject target);
-        bool Contains(string objID);
-        bool Contains(GameObject obj);
-    }
-
     //ROOM
-    public class Room : IOrigin
+    public class Room : Element
     {
         public Room(string _id)
         {
             id = _id;
+        }
+        protected override void Remove(Element target)
+        {
+            RemoveObject((GameObject) target);
         }
 
         string id;
@@ -356,33 +386,15 @@ namespace Algiers
         }
         public Dictionary<string, GameObject>.ValueCollection GameObjects => gameObjects.Values;
 
-        List<Container> containers = new List<Container>();
-
-        public T AddObject<T>(string objID) where T : GameObject
+        public void AddObject(GameObject item)
         {
-            GameObject newObj;
-
-            if (typeof(T) == typeof(Container))
-            {
-                newObj = new Container(objID);
-                containers.Add((Container) newObj);
-            }
-            else
-            {
-                Object[] args = new Object[] {objID};
-                newObj = (T) Activator.CreateInstance(typeof(T), args);
-            }
-
-            gameObjects.Add(objID, newObj);
-            return (T) newObj;
+            Adopt(item);
+            gameObjects.Add(item.ID, item);
         }
-
         public void RemoveObject(GameObject item)
         {
-            if (gameObjects.ContainsValue(item))
-            {
-                gameObjects.Remove(item.ID);
-            }
+            gameObjects.Remove(item.ID);
+            base.Remove(item);
         }
 
         public void AddExit(string goWord, string roomID)
@@ -393,11 +405,15 @@ namespace Algiers
         public bool InRoom(string target)
         {
             bool inBase = Contains(target);
-            foreach (Container container in containers)
+            foreach (GameObject gameobj in GameObjects)
             {
-                if (container.Contains(target))
+                if (typeof(Container).IsInstanceOfType(gameobj))
                 {
-                    return true;
+                    Container container = (Container) gameobj;
+                    if (container.Contains(target))
+                    {
+                        return true;
+                    }
                 }
             }
             return inBase;
@@ -411,11 +427,15 @@ namespace Algiers
             }
             else
             {
-                foreach (Container container in containers)
+                foreach (GameObject gameobj in GameObjects)
                 {
-                    if (container.Contains(target))
+                    if (typeof(Container).IsInstanceOfType(gameobj))
                     {
-                        return container.GetObject(target);
+                        Container container = (Container) gameobj;
+                        if (container.Contains(target))
+                        {
+                            return container.GetObject(target);
+                        }
                     }
                 }
             }
@@ -424,7 +444,7 @@ namespace Algiers
     }
 
     //GAMEOBJECTS
-    public class GameObject
+    public class GameObject : Element
     {
         public GameObject(string _id)
         {
@@ -470,13 +490,38 @@ namespace Algiers
         {
             return conditions[condition];
         }
+
+        public GameObject Copy()
+        {
+            GameObject copy = new GameObject(id);
+
+            foreach(KeyValuePair<string, Func<string>> rt in responsesT)
+            {
+                copy.SetTransitiveCommand(rt.Key, rt.Value);
+            }
+            foreach(KeyValuePair<string, Func<string, string>> rd in responsesD)
+            {
+                copy.SetDitransitiveCommand(rd.Key, rd.Value);
+            }
+            foreach(KeyValuePair<string, bool> con in conditions)
+            {
+                copy.SetCondition(con.Key, con.Value);
+            }
+
+            return copy;
+        }
     }
 
-    public class Container : GameObject, IOrigin
+    public abstract class Container : GameObject
     {
         public Container(string _id) : base(_id) {}
 
-        Dictionary<string, GameObject> items = new Dictionary<string, GameObject>();
+        protected override void Remove(Element target)
+        {
+            RemoveObject((GameObject) target);
+        }
+
+        protected Dictionary<string, GameObject> items = new Dictionary<string, GameObject>();
         public bool Contains(string objID)
         {
             return items.ContainsKey(objID);
@@ -486,13 +531,6 @@ namespace Algiers
             return items.ContainsValue(obj);
         }
 
-        public GameObject AddObject(string itemID)
-        {
-            GameObject newItem = new GameObject(itemID);
-            items.Add(itemID, newItem);
-
-            return newItem;
-        }
         public GameObject GetObject(string itemID)
         {
             return items[itemID];
@@ -502,20 +540,102 @@ namespace Algiers
             if (Contains(item))
             {
                 items.Remove(item.ID);
+                base.Remove(item);
             }
         }
     }
 
-    public class Person : GameObject
+    public class Chest : Container
     {
-        public Person(string _id) : base(_id) {}
+        public Chest(string _id) : base(_id) {}
 
-        List<string> gifts = new List<string>();
-        public List<string> Gifts => gifts;
-
-        public void AddGift(string giftID)
+        public void AddObject(GameObject item)
         {
-            gifts.Add(giftID);
+            Adopt(item);
+            items.Add(item.ID, item);
+        }
+    }
+
+    public class Stack : Container
+    {
+        string memberID;
+        GameObject exposedMember;
+
+        public Stack(string _id, string member) : base(_id)
+        {
+            memberID = member;
+            exposedMember = new GameObject(member);
+            Adopt(exposedMember);
+            items.Add(exposedMember.ID, exposedMember);
+        }
+        public Stack(string _id, GameObject origin) : base(_id)
+        {
+            memberID = origin.ID;
+            exposedMember = origin.Copy();
+            Adopt(exposedMember);
+            items.Add(memberID, exposedMember);
+        }
+
+        public virtual GameObject TakeMember()
+        {
+            GameObject temp = exposedMember;
+            GameObject newMember = exposedMember.Copy();
+            Adopt(newMember);
+            items[memberID] = newMember;
+            exposedMember = newMember;
+
+            base.Remove(temp);
+            return temp;
+        }
+
+        public void SetMemberTransitiveResponse(string id, Func<string> response)
+        {
+            exposedMember.SetTransitiveCommand(id, response);
+        }
+        public void SetMemberDitransitiveResponse(string id, Func<string, string> response)
+        {
+            exposedMember.SetDitransitiveCommand(id, response);
+        }
+    }
+
+    public class CountStack : Stack
+    {
+        int count;
+        public int Count => count;
+
+        public CountStack(string _id, string member, int count) : base(_id, member)
+        {
+            if (count > 0)
+            {
+                this.count = count;
+            }
+            else
+            {
+                throw new Exception("A CountStack must be initialized with a count greater than 0.");
+            }
+        }
+        public CountStack(string _id, GameObject member, int count) : base(_id, member)
+        {
+            if (count > 0)
+            {
+                this.count = count;
+            }
+            else
+            {
+                throw new Exception("A CountStack must be initialized with a count greater than 0.");
+            }
+        }
+
+        public override GameObject TakeMember()
+        {
+            GameObject member = base.TakeMember();
+            count -= 1;
+
+            if (count == 0)
+            {
+                Delete();
+            }
+            return member;
         }
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Algiers.StartKit
 {
@@ -236,6 +237,74 @@ namespace Algiers.StartKit
                     }
                 }
             };
+        }
+    }
+
+    public class Person : GameObject
+    {
+        public Person(string _id) : base(_id) {}
+
+        List<string> gifts = new List<string>();
+        public List<string> Gifts => gifts;
+
+        public void AddGift(string giftID)
+        {
+            gifts.Add(giftID);
+        }
+    }
+
+    public class ConsoleKit
+    {
+        public static void Loop(World world)
+        {
+            Parser parser = new Parser(world);
+
+            Console.WriteLine("");
+            Console.WriteLine(world.start);
+            while (!world.done)
+            {
+                Console.WriteLine("");
+                string response = parser.Parse(Console.ReadLine(), world.Mode);
+                Console.WriteLine("");
+                Console.WriteLine(response);
+            }
+            Console.ReadLine();
+        }
+    }
+
+    public class WebKit
+    {
+        bool playing = false;
+        
+        Parser parser;
+        String inputChar = ">";
+
+        public WebKit() {}
+        public WebKit(String inputChar)
+        {
+            this.inputChar = inputChar;
+        } 
+
+        public string Loop(String input, World world)
+        {
+            if (!playing)
+            {
+                playing = true;
+                parser = new Parser(world);
+                return world.start + Parser.Clear;
+            }
+            else if (!world.done)
+            {
+                string output = inputChar + input + Parser.Clear;
+
+                output += parser.Parse(input, world.Mode) + Parser.Clear;
+
+                return output;
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }
