@@ -5,10 +5,17 @@ public static class Bar
 {
     class Drink : GameObject
     {
-        public int price;
-        public string description;
+        int price;
+        public int Price => price;
+        string description;
 
-        public Drink(string id) : base(id, true) {}
+        public Drink(string id, Player player, int price, string description) : base(id, true)
+        {
+            this.price = price;
+            this.description = description;
+            SetTransitiveResponse("what", What);
+            SetTransitiveResponse("drink", DrinkResponse(player));
+        }
 
         public string What()
         {
@@ -29,44 +36,43 @@ public static class Bar
     {  
         return (drinkName) =>
         {
-            Drink drink = MakeDrink(drinkName);
-            drink.SetTransitiveResponse("what", drink.What);
-            drink.SetTransitiveResponse("drink", drink.DrinkResponse(player));
+            Drink drink = MakeDrink(drinkName, player);
             
             player.AddToInventory(drink);
-            player.IncrementCounter("money", -drink.price);
-            return "You hand the barkeep " + drink.price + "Ð and they slide you a " + drinkName + ".";
+            player.IncrementCounter("money", -drink.Price);
+            return "You hand the barkeep " + drink.Price + "Ð and they slide you a " + drinkName + ".";
         };
     }
 
-    static Drink MakeDrink(string name)
+    static Drink MakeDrink(string name, Player player)
     {
-        Drink drink = new Drink(name);
+        int price = 0;
+        string description = "";
         switch(name)
         {
             case ("whiskey"):
-                drink.price = 3;
-                drink.description = "A glass of aged amber whiskey.";
+                price = 3;
+                description = "A glass of aged amber whiskey.";
                 break;
             case ("tequila"):
-                drink.price = 5;
-                drink.description = "A glass of Mexican tequila.";
+                price = 5;
+                description = "A glass of Mexican tequila.";
                 break;
             case ("gin"):
-                drink.price = 5;
-                drink.description = "A glass of imported gin.";
+                price = 5;
+                description = "A glass of imported gin.";
                 break;
             case ("moonshine"):
-                drink.price = 8;
-                drink.description = "A glass of ... you're not sure what. It reeks, though.";
+                price = 8;
+                description = "A glass of ... you're not sure what. It reeks, though.";
                 break;
             case ("bottle of whiskey"):
-                drink.price = 14;
-                drink.description = "A whole bottle of aged amber whiskey";
+                price = 14;
+                description = "A whole bottle of aged amber whiskey";
                 break;
             default:
                 break;
         }
-        return drink;
+        return new Drink(name, player, price, description);
     }
 }
