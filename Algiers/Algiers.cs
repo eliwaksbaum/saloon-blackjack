@@ -22,7 +22,10 @@ namespace Algiers
 
         public void Delete()
         {
-            parent.Remove(this);
+            if (parent != null)
+            {
+                parent.Remove(this);
+            }
         }
 
         protected void Adopt(Element child)
@@ -251,7 +254,7 @@ namespace Algiers
     {
         protected override void Remove(Element target)
         {
-            RemoveFromInventory((GameObject) target);
+            DeleteFromInventory((GameObject) target);
         }
 
         State state;
@@ -326,25 +329,77 @@ namespace Algiers
 
         public GameObject GetObject(string target)
         {
+            GameObject invObj = GetFromInventory(target);
+            return invObj != null ? invObj : GetFromRoom(target);
+        }
+        public GameObject GetFromInventory(string target)
+        {
             if (InInventory(target))
             {
                 return inventory[target];
             }
-
+            return null;
+        }
+        public GameObject GetFromRoom(string target)
+        {
             if (InRoom(target))
             {
                 return current_room.GetObject(target);
             }
-
             return null;
         }
 
         public void AddToInventory(GameObject target)
         {
+            if (inventory.ContainsKey(target.ID) && target.Stackable)
+            {
+                GameObject old = GetFromInventory(target.ID);
+                if (InventoryStack.IsStack(old))
+                {
+                    //target.Delete();
+                    InventoryStack stack = (InventoryStack) old;
+                    target = stack.Increment();
+                }
+                else
+                {
+                    target = new InventoryStack(old);
+                }
+            }
             Adopt(target);
             inventory.Add(target.ID, target);
         }
         public void RemoveFromInventory(GameObject target)
+        {
+            if (InventoryStack.IsStack(target))
+            {
+                InventoryStack stack = (InventoryStack) target;
+                AddToInventory(stack.Decrement());
+            }
+            else
+            {
+                inventory.Remove(target.ID);
+                base.Remove(target);
+            }
+        }
+        public void RemoveFromInventory(String target)
+        {
+            if (inventory.ContainsKey(target))
+            {
+                GameObject targetObj = inventory[target];
+                if (InventoryStack.IsStack(targetObj))
+                {
+                    InventoryStack stack = (InventoryStack) targetObj;
+                    AddToInventory(stack.Decrement());
+                }
+                else
+                {
+                    inventory.Remove(target);
+                    base.Remove(targetObj);
+                }
+            }
+        }
+
+        void DeleteFromInventory(GameObject target)
         {
             inventory.Remove(target.ID);
             base.Remove(target);
@@ -446,13 +501,16 @@ namespace Algiers
     //GAMEOBJECTS
     public class GameObject : Element
     {
-        public GameObject(string _id)
+        public GameObject(string _id, bool stackable = false)
         {
             id = _id;
+            this.stackable = stackable;
         }
 
         string id;
         public string ID => id;
+        bool stackable;
+        public bool Stackable => stackable;
         Dictionary<string, Func<string>> responsesT = new Dictionary<string, Func<string>>();
         Dictionary<string, Func<string, string>> responsesD = new Dictionary<string, Func<string, string>>();
         Dictionary<string, bool> conditions = new Dictionary<string, bool> ();
@@ -493,7 +551,7 @@ namespace Algiers
 
         public GameObject Copy()
         {
-            GameObject copy = new GameObject(id);
+            GameObject copy = new GameObject(id, stackable);
 
             foreach(KeyValuePair<string, Func<string>> rt in responsesT)
             {
@@ -509,6 +567,21 @@ namespace Algiers
             }
 
             return copy;
+        }
+        public void CopyResponsesTo(GameObject mold)
+        {
+            foreach(KeyValuePair<string, Func<string>> rt in responsesT)
+            {
+                mold.SetTransitiveCommand(rt.Key, rt.Value);
+            }
+            foreach(KeyValuePair<string, Func<string, string>> rd in responsesD)
+            {
+                mold.SetDitransitiveCommand(rd.Key, rd.Value);
+            }
+            foreach(KeyValuePair<string, bool> con in conditions)
+            {
+                mold.SetCondition(con.Key, con.Value);
+            }
         }
     }
 
@@ -556,24 +629,31 @@ namespace Algiers
         }
     }
 
-    public class Stack : Container
+    public class Hoard : Container
     {
         string memberID;
         GameObject exposedMember;
 
-        public Stack(string _id, string member) : base(_id)
+        public Hoard(string _id, string member) : base(_id)
         {
             memberID = member;
-            exposedMember = new GameObject(member);
+            exposedMember = new GameObject(member, true);
             Adopt(exposedMember);
             items.Add(exposedMember.ID, exposedMember);
         }
-        public Stack(string _id, GameObject origin) : base(_id)
+        public Hoard(string _id, GameObject origin) : base(_id)
         {
-            memberID = origin.ID;
-            exposedMember = origin.Copy();
-            Adopt(exposedMember);
-            items.Add(memberID, exposedMember);
+            if (origin.Stackable)
+            {
+                memberID = origin.ID;
+                exposedMember = origin.Copy();
+                Adopt(exposedMember);
+                items.Add(memberID, exposedMember);
+            }
+            else
+            {
+                throw new Exception("The origin of a Hoard must be stackable.");
+            }
         }
 
         public virtual GameObject TakeMember()
@@ -598,12 +678,12 @@ namespace Algiers
         }
     }
 
-    public class CountStack : Stack
+    public class NumHoard : Hoard
     {
         int count;
         public int Count => count;
 
-        public CountStack(string _id, string member, int count) : base(_id, member)
+        public NumHoard(string _id, string member, int count) : base(_id, member)
         {
             if (count > 0)
             {
@@ -614,7 +694,7 @@ namespace Algiers
                 throw new Exception("A CountStack must be initialized with a count greater than 0.");
             }
         }
-        public CountStack(string _id, GameObject member, int count) : base(_id, member)
+        public NumHoard(string _id, GameObject member, int count) : base(_id, member)
         {
             if (count > 0)
             {
@@ -636,6 +716,51 @@ namespace Algiers
                 Delete();
             }
             return member;
+        }
+    }
+
+    public class InventoryStack : GameObject
+    {
+        int count;
+        public int Count => count;
+        GameObject origin;
+        public GameObject Origin => origin;
+
+        public InventoryStack(GameObject origin) : base(origin.ID, true)
+        {
+            count = 2;
+            this.origin = origin;
+            origin.CopyResponsesTo(this);
+            origin.Delete();
+        }
+        InventoryStack(GameObject origin, int count) : base(origin.ID, true)
+        {
+            this.count = count;
+            this.origin = origin;
+            origin.CopyResponsesTo(this);
+        }
+
+        public InventoryStack Increment()
+        {
+            Delete();
+            return new InventoryStack(origin, count + 1);
+        }
+        public GameObject Decrement()
+        {
+            Delete();
+            if (count == 2)
+            {
+                return origin;
+            }
+            else
+            {
+                return new InventoryStack(origin, count - 1);
+            }
+        }
+
+        public static bool IsStack(GameObject obj)
+        {
+            return typeof(InventoryStack).IsInstanceOfType(obj);
         }
     }
 
@@ -889,6 +1014,11 @@ namespace Algiers
                 default:
                     return false;
             }
+        }
+
+        public static string CapitalizeFirst(string str)
+        {
+            return str.Substring(0, 1).ToUpper() + str.Substring(1);
         }
     }
 }

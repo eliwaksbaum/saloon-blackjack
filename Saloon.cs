@@ -115,7 +115,7 @@ public class Saloon
         Person bob = new Person("bob");
         string BobGive(string gift)
         {
-            player.RemoveFromInventory(player.GetObject(gift));
+            player.RemoveFromInventory(player.GetFromInventory(gift));
             return "Thanks!";
         }
         bob.SetDitransitiveCommand("give", BobGive);
@@ -133,8 +133,26 @@ public class Saloon
         bot.SetTransitiveCommand("take", BotTake);
         box.AddObject(bot);
 
-        //box of matches
-        //3 cats
+        Hoard matchbox = new Hoard("box of matches", "match");
+        string LightMatch()
+        {
+            player.RemoveFromInventory("match");
+            return "fwoosh";
+        }
+        string TakeMatch()
+        {
+            player.AddToInventory(matchbox.TakeMember());
+            return "you take a match from the box";
+        }
+        matchbox.SetMemberTransitiveResponse("use", LightMatch);
+        matchbox.SetMemberTransitiveResponse("take", TakeMatch);
+        saloon.AddObject(matchbox);
+
+        GameObject ticket = new GameObject("ticket");
+        ticket.SetTransitiveCommand("what", ()=>{return "a shiny ticket";});
+
+        //CountStack tickets = new CountStack("tickets", ticket, 3);
+        //string GiveTicket
         
         player.current_room = saloon;
         return world;
