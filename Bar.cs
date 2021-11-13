@@ -19,7 +19,7 @@ public static class Bar
         {
             return () =>
             {
-                player.RemoveFromInventory(this);
+                player.RemoveFromInventory(ID);
                 return "You drink the " + ID + ". This place has good stuff";
             };
         }
