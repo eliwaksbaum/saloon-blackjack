@@ -30,8 +30,8 @@ public static class Bar
         return (drinkName) =>
         {
             Drink drink = MakeDrink(drinkName);
-            drink.SetTransitiveCommand("what", drink.What);
-            drink.SetTransitiveCommand("drink", drink.DrinkResponse(player));
+            drink.SetTransitiveResponse("what", drink.What);
+            drink.SetTransitiveResponse("drink", drink.DrinkResponse(player));
             
             player.AddToInventory(drink);
             player.IncrementCounter("money", -drink.price);

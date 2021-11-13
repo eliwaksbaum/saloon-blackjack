@@ -42,10 +42,10 @@ public class BlackJack
         player = world.player;
         saloonState = world.player.State;
 
-        world.SetIntransitiveCommand(hit, Hit);
-        world.SetIntransitiveCommand(stay, Stay);
-        world.SetIntransitiveCommand(play, Start);
-        world.SetIntransitiveCommand(leave, Leave);
+        world.SetIntransitiveResponse(hit, Hit);
+        world.SetIntransitiveResponse(stay, Stay);
+        world.SetIntransitiveResponse(play, Start);
+        world.SetIntransitiveResponse(leave, Leave);
     }
 
     string Hit()

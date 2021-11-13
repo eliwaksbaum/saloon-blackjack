@@ -95,7 +95,7 @@ public class Saloon
         {
             if (player.InInventory(item))
             {
-                player.GetObject(item).Delete();
+                player.RemoveFromInventory(item);
                 return "You chuck the " + item;
             }
             else
@@ -108,7 +108,7 @@ public class Saloon
         world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
         world.AddDitransitiveCommand("give", CMD.Give(player), notPlayingState, "Give what?", new string[]{"to"});
 
-        player.IncrementCounter("money", 10);
+        player.IncrementCounter("money", 40);
 
         Room saloon = world.AddRoom("saloon");     
 
@@ -118,7 +118,7 @@ public class Saloon
             player.RemoveFromInventory(player.GetFromInventory(gift));
             return "Thanks!";
         }
-        bob.SetDitransitiveCommand("give", BobGive);
+        bob.SetDitransitiveResponse("give", BobGive);
         saloon.AddObject(bob);
 
         Chest box = new Chest("box");
@@ -130,10 +130,15 @@ public class Saloon
             player.AddToInventory(bot);
             return "u take the bot from the box";
         }
-        bot.SetTransitiveCommand("take", BotTake);
+        bot.SetTransitiveResponse("take", BotTake);
         box.AddObject(bot);
 
         Hoard matchbox = new Hoard("box of matches", "match");
+        // string TakeBox()
+        // {
+        //     player.AddToInventory(matchbox);
+        //     return "you pocket the box of matches. so many matches!";
+        // }
         string LightMatch()
         {
             player.RemoveFromInventory("match");
@@ -146,13 +151,11 @@ public class Saloon
         }
         matchbox.SetMemberTransitiveResponse("use", LightMatch);
         matchbox.SetMemberTransitiveResponse("take", TakeMatch);
+        //matchbox.SetTransitiveCommand("take", TakeBox);
         saloon.AddObject(matchbox);
 
         GameObject ticket = new GameObject("ticket");
-        ticket.SetTransitiveCommand("what", ()=>{return "a shiny ticket";});
-
-        //CountStack tickets = new CountStack("tickets", ticket, 3);
-        //string GiveTicket
+        ticket.SetTransitiveResponse("what", ()=>{return "a shiny ticket";});
         
         player.current_room = saloon;
         return world;
