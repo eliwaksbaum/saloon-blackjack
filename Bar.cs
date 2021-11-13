@@ -8,7 +8,7 @@ public static class Bar
         public int price;
         public string description;
 
-        public Drink(string id) : base(id) {}
+        public Drink(string id) : base(id, true) {}
 
         public string What()
         {
