@@ -37,10 +37,14 @@ public static class Bar
         return (drinkName) =>
         {
             Drink drink = MakeDrink(drinkName, player);
-            
-            player.AddToInventory(drink);
-            player.IncrementCounter("money", -drink.Price);
-            return "You hand the barkeep " + drink.Price + "Ð and they slide you a " + drinkName + ".";
+
+            if (player.GetCounter("money") >= drink.Price)
+            {
+                player.AddToInventory(drink);
+                player.IncrementCounter("money", -drink.Price);
+                return "You hand the barkeep " + drink.Price + "Ð and they slide you a " + drinkName + ".";
+            }
+            return "You can't afford a " + drinkName + ".";
         };
     }
 

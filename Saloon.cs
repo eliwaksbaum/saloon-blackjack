@@ -108,7 +108,7 @@ public class Saloon
         world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
         world.AddDitransitiveCommand("give", CMD.Give(player), notPlayingState, "Give what?", new string[]{"to"});
 
-        player.IncrementCounter("money", 40);
+        player.IncrementCounter("money", 10);
 
         Room saloon = world.AddRoom("saloon");     
 
