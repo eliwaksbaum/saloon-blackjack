@@ -2,7 +2,7 @@ using Algiers;
 using Algiers.StartKit;
 using System;
 
-public class Saloon
+public class Main
 {
     public static World SetWorld()
     {
@@ -60,10 +60,10 @@ public class Saloon
         }
         world.AddIntransitiveCommand("inv", Inv, State.All);
 
-        world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "What what?", preps: new string[]{"is"});
-        world.AddTransitiveCommand("who", CMD.Who(player), State.All, "Who is who?", preps: new string[]{"is"});
+        world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("take", CMD.Take(player), notPlayingState, "Take what?");
-        world.AddTransitiveCommand("talk", CMD.Talk(player), State.All, "Talk to whom?");
+        world.AddTransitiveCommand("talk", CMD.Talk(player), State.All, "Talk to whom?", preps: new string[]{"to"});
+        world.AddTransitiveCommand("go", CMD.Go(player, world), saloonState, "go where?", new string[]{"go to", "go to the", "enter", "enter the"});
 
         Func<string, string> Drink()
         {
