@@ -2,7 +2,7 @@ using Algiers;
 using Algiers.StartKit;
 using System;
 
-public class Main
+public class Game
 {
     public static World SetWorld()
     {

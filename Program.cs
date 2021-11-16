@@ -8,7 +8,7 @@ namespace Saloon_Blackjack
     {
         static void Main(string[] args)
         {
-            World world = Saloon.SetWorld();
+            World world = Game.SetWorld();
             ConsoleKit.Loop(world);
         }
     }
