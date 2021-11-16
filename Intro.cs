@@ -2,7 +2,7 @@ using Algiers;
 
 public class Intro : Room
 {
-    public Intro(string id, Player player) : base(id)
+    public Intro(Player player) : base("intro")
     {
         description = "Your standing outside the saloon. The red neon sign bleeds into the dark purple sky. There's not "
             + "much around. There's a thug standing by the door and the cabby you hired is leaning against his car, smoking.";
