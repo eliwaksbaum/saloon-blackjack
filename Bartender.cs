@@ -35,12 +35,23 @@ public class Bartender : GameObject
         {
             if (item == "signet")
             {
-                SetCondition("proven", true);
-                return "'I'm most pleased to welcome a fellow armsman. Tonight's song is Black Diamond.'";
+                string phrase = "'I'm most pleased to welcome a brother in arms.'";
+                if (!GetCondition("proven"))
+                {
+                    SetCondition("proven", true);
+                    phrase += "\nThe bartender slides you a card.";
+
+                    GameObject card = new GameObject("Two of Hearts");
+                    card.SetTransitiveResponse("examine", () => {
+                        return "The bartender gave you this card when you showed him the signet. What does it mean?";
+                    });
+                    player.AddToInventory(card);
+                }
+                return phrase;
             }
             else
             {
-                return null;
+                return "The bartender doesn't seem interested in the " + item + ".";
             }
         }
         SetDitransitiveResponse("show", Show);
