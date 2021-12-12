@@ -61,6 +61,7 @@ public class Game
         world.AddIntransitiveCommand("inv", Inv, State.All);
 
         world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
+        world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("take", CMD.Take(player), notPlayingState, "Take what?");
         world.AddTransitiveCommand("talk", CMD.Talk(player), State.All, "Talk to whom?", preps: new string[]{"to"});
         world.AddTransitiveCommand("go", CMD.Go(player, world), saloonState, "go where?", new string[]{"go to", "go to the", "enter", "enter the"});
@@ -141,8 +142,12 @@ public class Game
 
         player.IncrementCounter("money", 10);
      
+        Room intro = new Intro(player);
+        world.AddRoom(intro);
+        Room saloon = new Saloon(player);
+        world.AddRoom(saloon);
         
-        //player.current_room = intro;
+        player.current_room = intro;
         return world;
     }
 }
