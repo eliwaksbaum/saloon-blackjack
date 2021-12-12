@@ -2,13 +2,13 @@ using Algiers;
 
 public class Dealer : GameObject
 {
-    public Dealer(Player player, State bjs) : base("the dealer")
+    public Dealer(Player player) : base("the dealer")
     {
         SetCondition("proven", false);
 
         string Talk()
         {
-            if (player.State == bjs)
+            if (player.State == BlackJack.blackjackState)
             {
                 return "You try to get the dealer's attention but he ignores you. A professional, it seems.";
             }
