@@ -106,6 +106,39 @@ public class Game
         }
         world.AddDitransitiveCommand("give", Give, notPlayingState, "Give what?", new string[]{"to"});
 
+        string Show(string item, string target)
+        {
+            if (!player.InInventory(item))
+            {
+                string indef = (Parser.StartsWithVowel(item))? "an " : "a ";
+                return "You don't have " + indef + item + " in your inventory.";
+            }
+            else if (target == "")
+            {
+                return "Show " + item + " to whom?";
+            }
+            else if (!player.CanAccessObject(target))
+            {
+                return "There is nobody named " + target + " here to show the " + item + " to.";
+            }
+            else
+            {
+                GameObject targetObj = player.GetFromRoom(target);
+                Func<string, string> give = targetObj.GetDitransitiveResponse("show");
+                string nullHandler = "You can't show the " + item + " to " + target + ".";
+                if (give == null)
+                {
+                    return nullHandler;
+                }
+                else
+                {
+                    string response = give(item);
+                    return (response == null)? nullHandler : response;
+                }
+            }
+        }
+        world.AddDitransitiveCommand("show", Show, State.All, "Show what?", new string[]{"to"});
+
         player.IncrementCounter("money", 10);
      
         

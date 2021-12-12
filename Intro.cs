@@ -4,7 +4,7 @@ public class Intro : Room
 {
     public Intro(Player player) : base("intro")
     {
-        description = "Your standing outside the saloon. The red neon sign bleeds into the dark purple sky. There's not "
+        description = "You stand outside the saloon. The red neon sign bleeds into the dark purple sky. There's not "
             + "much around. There's a thug standing by the door and the cabby you hired is leaning against his car, smoking.";
         AddExit("saloon", "saloon");
 
@@ -13,7 +13,7 @@ public class Intro : Room
                 return "Looks like hired muscle. Here to protect the clients, or to protect against them?";
             });
             thug.SetTransitiveResponse("talk", () => {
-                return "You only talk to me if you have a problem. You have a problem?";
+                return "'You only talk to me if you have a problem. You have a problem?'";
             });
         AddObject(thug);
 
@@ -23,11 +23,11 @@ public class Intro : Room
                 if (cabby.GetCondition("talk1"))
                 {
                     cabby.SetCondition("talk1", true);
-                    return "This is certainly an ... interesting part of town. You take care in there, dead people don't pay their fares.";
+                    return "''This is certainly an ... interesting part of town. You take care in there, dead people don't pay their fares.'";
                 }
                 else
                 {
-                    return "Better hurry up. Meter's running.";
+                    return "'Better hurry up. Meter's running.'";
                 }
             });
             cabby.SetTransitiveResponse("examine", () => {
@@ -35,6 +35,6 @@ public class Intro : Room
             });
         AddObject(cabby);
 
-        OnExit = () => {player.AddWaypoint("stage0");};
+        OnExit = () => {player.AddWaypoint("stage1");};
     }
 }
