@@ -7,7 +7,6 @@ public class Game
     public static World SetWorld()
     {
         State saloonState = new State();
-        State barState = new State();
         State notPlayingState = BlackJack.blackjackState.Inverse();
 
         World world = new World();
@@ -24,19 +23,6 @@ public class Game
         }
         world.AddIntransitiveCommand("play blackjack", PlayBlackJack, saloonState);
         BlackJack.AddCommands(world);
-        
-        string GoBar()
-        {
-            player.State = barState;
-            return "You sit at the bar.";
-        }
-        world.AddIntransitiveCommand("sit at the bar", GoBar, saloonState);
-        string LeaveBar()
-        {
-            player.State = saloonState;
-            return "You get up from the bar.";
-        }
-        world.AddIntransitiveCommand("leave the bar", LeaveBar, barState, new string[]{"leave bar"});
         
         world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState, new string[]{"look around"});
         
@@ -90,7 +76,7 @@ public class Game
             };
         }
         world.AddTransitiveCommand("drink", Drink(), State.All, "Drink what?");
-        world.AddTransitiveCommand("buy", Bar.Buy(player), barState, "Buy what?");
+        world.AddTransitiveCommand("buy", Bar.Buy(player), notPlayingState, "Buy what?");
 
         world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
         
@@ -141,7 +127,7 @@ public class Game
         world.AddDitransitiveCommand("show", Show, State.All, "Show what?", new string[]{"to"});
 
         player.IncrementCounter("money", 10);
-     
+
         Room intro = new Intro(player);
         world.AddRoom(intro);
         Room saloon = new Saloon(player);
