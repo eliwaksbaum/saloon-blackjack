@@ -6,10 +6,12 @@ public class Intro : Room
     {
         description = "You stand outside the saloon. The red neon sign bleeds into the dark purple sky. There's not "
             + "much around. There's a thug standing by the door and the cabby you hired is leaning against his car, smoking.";
+        
         AddExit("saloon", "saloon");
+        AddExit("the saloon", "saloon");
 
         GameObject thug = new GameObject("thug");
-            thug.SetTransitiveResponse("examine", () => {
+            thug.SetTransitiveResponse("what", () => {
                 return "Looks like hired muscle. Here to protect the clients, or to protect against them?";
             });
             thug.SetTransitiveResponse("talk", () => {
@@ -30,7 +32,7 @@ public class Intro : Room
                     return "'Better hurry up. Meter's running.'";
                 }
             });
-            cabby.SetTransitiveResponse("examine", () => {
+            cabby.SetTransitiveResponse("what", () => {
                 return "You had to take a cab to the spot, and pay this man who looks old enough to have been born on Earth to wait for you. You miss your scooter.";
             });
         AddObject(cabby);

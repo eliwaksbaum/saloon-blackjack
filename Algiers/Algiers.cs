@@ -74,6 +74,11 @@ namespace Algiers
             rooms.Add(roomID, newRoom);
             return newRoom;
         }
+        public void AddRoom(Room room)
+        {
+            Adopt(room);
+            rooms.Add(room.ID, room);
+        }
         public Room GetRoom(string id)
         {
             return rooms[id];
@@ -294,7 +299,7 @@ namespace Algiers
         {
             return waypoints.Contains(point);
         }
-
+        
         public void AddCounter(string counter)
         {
             counters.Add(counter, 0);
