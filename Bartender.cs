@@ -55,5 +55,7 @@ public class Bartender : GameObject
             }
         }
         SetDitransitiveResponse("show", Show);
+
+        SetTransitiveResponse("what", () => {return "The bartender is a big, bald, mean looking guy. He stands hunched over the bar, looking bored.";});
     }
 }

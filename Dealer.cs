@@ -54,5 +54,8 @@ public class Dealer : GameObject
             }
         }
         SetDitransitiveResponse("show", Show);
+
+        SetTransitiveResponse("what", () => {return "The dealer sports a neat moustache, a wicked scar across his jaw, and a red bowtie." +
+            " He makes it look the cards are moving on their own.";});
     }
 }
