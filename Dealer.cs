@@ -40,12 +40,12 @@ public class Dealer : GameObject
                 if (!GetCondition("proven"))
                 {
                     SetCondition("proven", true);
-                    phrase += " A little music would make it more lively in here, don't you think?'+\n A strange looking coin " +
-                        " appears between the dealer's fingers, then jumps out towards you. You catch it. It says 'Quarter Dollar' on it.";
+                    phrase += " A little music would make it more lively in here, don't you think?'\n A strange looking coin" +
+                        " appears between the dealer's fingers, then jumps out towards you. You catch it.";
                     
                     GameObject quarter = new GameObject("quarter");
                     quarter.SetTransitiveResponse("what", () => {return "The dealer gave you this odd coin when you showed him the" +
-                        " signet. What could it mean?";});
+                        " signet. It says 'Quarter Dollar' on it. What could it mean?";});
                     player.AddToInventory(quarter);
                 }
                 else

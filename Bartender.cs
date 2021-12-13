@@ -21,7 +21,15 @@ public class Bartender : GameObject
                 }
                 else
                 {
-                    return GetCondition("2talk1") ? "'Look, do you want a drink or not?'" : "'Still thirsty?'";
+                    if (GetCondition("2talk1"))
+                    {
+                        return "'Look, do you want a drink or not?'";
+                    }
+                    else
+                    {
+                        SetCondition("2talk1", true);
+                        return "'Still thirsty?'";
+                    }
                 }
             }
             else //stage1
@@ -39,10 +47,10 @@ public class Bartender : GameObject
                 if (!GetCondition("proven"))
                 {
                     SetCondition("proven", true);
-                    phrase += "\nThe bartender slides you a card.";
+                    phrase += "\nThe bartender slides you a playing card.";
 
-                    GameObject card = new GameObject("Two of Hearts");
-                    card.SetTransitiveResponse("examine", () => {
+                    GameObject card = new GameObject("two of hearts");
+                    card.SetTransitiveResponse("what", () => {
                         return "The bartender gave you this card when you showed him the signet. What does it mean?";
                     });
                     player.AddToInventory(card);

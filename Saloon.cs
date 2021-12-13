@@ -2,7 +2,7 @@ using Algiers;
 
 public class Saloon : Room
 {
-    public Saloon(Player player) : base("saloon")
+    public Saloon(SPlayer player) : base("saloon")
     {
         description = "A smoky, seedy looking place that doesn't seem to know what year it is. There's even a JUKEBOX." +
             " The BARTENDER stands in front of an empty COUNTER. There's a DEALER running a game of blacjack for a few" +
@@ -42,5 +42,6 @@ public class Saloon : Room
         AddObject(menu);
 
         //JukeBox
+        AddObject(new Jukebox(player));
     }
 }

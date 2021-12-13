@@ -77,7 +77,8 @@ public class Game
             };
         }
         world.AddTransitiveCommand("drink", Drink(), State.All, "Drink what?");
-        world.AddTransitiveCommand("buy", Bar.Buy(player), notPlayingState, "Buy what?");
+        world.AddTransitiveCommand("buy", Bar.Buy(player), saloonState, "Buy what?");
+        world.AddIntransitiveCommand("choose a song", Jukebox.ChooseSong, saloonState, new string[] {"choose song"});
 
         world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
         
@@ -135,6 +136,10 @@ public class Game
         world.AddRoom(saloon);
         
         player.current_room = intro;
+        
+        player.current_room = saloon;
+        player.AddWaypoint("firstgame");
+
         return world;
     }
 }

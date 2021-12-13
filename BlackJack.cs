@@ -127,7 +127,7 @@ public class BlackJack
         }
         else
         {
-            world.GoRaw(TakeBet);
+            Parser.GetParser.GoRaw(TakeBet);
             return "How much would you like to bet?";
         }
     }
@@ -164,7 +164,7 @@ public class BlackJack
         {
             if (bet <= player.GetCounter("money"))
             {
-                world.GoStandard();
+                Parser.GetParser.GoStandard();
                 return FirstDeal();
             }
             else
