@@ -50,19 +50,37 @@ public class BlackJack
 
     string Hit()
     {
-        int newCard = Deal();
-        better.Add(newCard);
-        string ending;
-        if (playerScore > 21)
+        int newCard;
+        if (player.HasWaypoint("stage4"))
         {
-            player.State = inOrOutState;
-            ending = "You're over 21!\n" + PayOut(false) + "\nPlay again or leave?";
+            newCard = RiggedDeal(player.DoorCode.Substring(2));
+            player.AddWaypoint("hascode");
         }
         else
         {
-            ending = Announce() + "\nWould you like to hit or stay?";
+            newCard = Deal();
         }
-        return "The dealer places a " + CardName(newCard) + " on the table.\n" + ending;
+        better.Add(newCard);
+
+        if (player.HasWaypoint("stage4"))
+        {
+            return "The dealer places a " + CardName(newCard) + " on the table and gives you the briefest glance. Better not hit again." +
+                "\n" + Stay();
+        }
+        else
+        {
+            string ending;
+            if (playerScore > 21)
+            {
+                player.State = inOrOutState;
+                ending = "You're over 21!\n" + PayOut(false) + "\nPlay again or leave?";
+            }
+            else
+            {
+                ending = Announce() + "\nWould you like to hit or stay?";
+            }
+            return "The dealer places a " + CardName(newCard) + " on the table.\n" + ending;
+        }
     }
 
     string Stay()
@@ -134,7 +152,7 @@ public class BlackJack
 
     string FirstDeal()
     {
-        string message = "\nYou bet " + bet + "Ð.\nThe dealer shuffles and deals.\n";
+        string message = "You bet " + bet + "Ð.\nThe dealer shuffles and deals.\n";
 
         dealt = new int[13];
         dealer = new List<int>();
@@ -142,8 +160,17 @@ public class BlackJack
 
         dealer.Add(Deal());
         dealer.Add(Deal());
-        better.Add(Deal());
-        better.Add(Deal());
+
+        if (player.HasWaypoint("stage4"))
+        {
+            better.Add(RiggedDeal(player.DoorCode.Substring(0,1)));
+            better.Add(RiggedDeal(player.DoorCode.Substring(1,1)));
+        }
+        else
+        {
+            better.Add(Deal());
+            better.Add(Deal());
+        }
 
         message += Announce();
         if (playerScore == 21)
@@ -203,6 +230,14 @@ public class BlackJack
         {
             return Deal();
         }
+    }
+
+    int RiggedDeal(string rig)
+    {
+        int draw;
+        int.TryParse(rig, out draw);
+        dealt[draw-1] += 1;
+        return draw;
     }
 
     string CardName(int value)

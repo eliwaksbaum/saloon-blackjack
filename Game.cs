@@ -164,7 +164,9 @@ public class Game
         
         player.current_room = saloon;
         //player.AddWaypoint("firstgame");
-        player.AddToInventory(new GameObject("quarter"));
+        //player.AddToInventory(new GameObject("quarter"));
+        saloon.AddObject(new Rys(player));
+        player.AddToInventory(new GameObject("peanut tequila"));
 
         return world;
     }

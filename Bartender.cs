@@ -12,7 +12,7 @@ public class Bartender : GameObject
             if (player.HasWaypoint("stage4"))
             {
                 return player.HasWaypoint("hascode") ? "'Can I interest you in anything else, sir?'" :
-                    "You're looking lucky sir, you might want to play a hand. Anything to quench your thirst?";
+                    "'You're looking lucky sir, you might want to play a hand. Anything to quench your thirst?'";
             }
             else if (player.HasWaypoint("stage3"))
             {

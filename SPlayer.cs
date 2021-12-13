@@ -1,7 +1,30 @@
 using Algiers;
+using System;
 
 public class SPlayer : Player
 {
+    Random rand = new Random();
+    string doorCode;
+    public string DoorCode => doorCode;
+
+    public SPlayer()
+    {
+        doorCode = SetCode();
+    }
+
+    string SetCode()
+    {
+        string[] code = new string[3];
+        string[,] codes = new string[,] {{"7","7","7"}, {"6","8","7"}, {"5","9","7"}, {"5","8","8"}, {"4","8","9"}, {"3","9","9"}};
+        int setI = rand.Next(6);
+        int firstI = rand.Next(3);
+
+        code[0] = codes[setI, firstI];
+        code[1] = codes[setI, (firstI + 1)%3];
+        code[2] = codes[setI, (firstI + 2)%3];
+        return code[0]+code[1]+code[2];
+    }
+
     new public void AddWaypoint(string newpoint)
     {
         base.AddWaypoint(newpoint);
