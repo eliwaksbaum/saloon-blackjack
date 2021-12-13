@@ -78,14 +78,27 @@ public class Game
         }
         world.AddTransitiveCommand("drink", Drink(), State.All, "Drink what?");
         world.AddTransitiveCommand("buy", Bar.Buy(player), saloonState, "Buy what?");
-        //world.AddIntransitiveCommand("choose a song", Jukebox.ChooseSong, saloonState, new string[] {"choose song"});
-
-        string Use (string tool, string target)
+        
+        string Open(string target)
         {
-            if (tool == "jukebox" || tool == "door")
+            if (target == "door")
             {
-                GameObject toolObj = player.GetFromRoom(tool);
-                return toolObj.GetTransitiveResponse("use")();
+                GameObject door = player.GetFromRoom("door");
+                return door.GetTransitiveResponse("open")();
+            }
+            else
+            {
+                return "You can't open the " + target + ".";
+            }
+        }
+        world.AddTransitiveCommand("open", Open, saloonState, "Open what?");
+
+        string Use(string tool, string target)
+        {
+            if (tool == "jukebox")
+            {
+                GameObject juke = player.GetFromRoom("jukebox");
+                return juke.GetTransitiveResponse("use")();
             }
             else
             {
