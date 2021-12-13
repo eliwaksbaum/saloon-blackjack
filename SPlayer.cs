@@ -20,5 +20,19 @@ public class SPlayer : Player
             });
             AddToInventory(signet);
         }
+
+        if (newpoint == "stage3")
+        {
+            string stage3 = "As the strange music wafts through the room, you hear the door to the saloon swing open. You turn to look, and" +
+                " see who but motherfuckin Rys Lee strutting into the place. Shit.";
+            Parser.GetParser.AddAfterword(stage3);
+            current_room.AddObject(new Rys(this));
+        }
+
+        if (newpoint == "stage4")
+        {
+            string stage4 = "Rys fucking dies";
+            Parser.GetParser.AddAfterword(stage4);
+        }
     }
 }

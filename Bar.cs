@@ -96,6 +96,27 @@ public static class Bar
             default:
                 break;
         }
-        return new Drink(name, player, price, description);
+
+        Drink drink = new Drink(name, player, price, description);
+        drink.SetDitransitiveResponse("use", (tool) => {
+            if (tool == "peanut")
+            {
+                player.RemoveFromInventory(name);
+                player.RemoveFromInventory("peanut");
+
+                GameObject poison = new GameObject("peanut " + name);
+                poison.SetTransitiveResponse("what", () => {
+                    return "A " + name + " with trace amounts of peanut in it.";
+                });
+                player.AddToInventory(poison);
+
+                return "You break off the tiniest pieces of the peanut you can and slip them into the " + name + ".";
+            }
+            else
+            {
+                return null;
+            }
+        });
+        return drink;
     }
 }

@@ -9,9 +9,14 @@ public class Bartender : GameObject
 
         string Talk()
         {
-            if (player.HasWaypoint("stage3"))
+            if (player.HasWaypoint("stage4"))
             {
-                return "'Can I interest you in anything else, sir?'";
+                return player.HasWaypoint("hascode") ? "'Can I interest you in anything else, sir?'" :
+                    "You're looking lucky sir, you might want to play a hand. Anything to quench your thirst?";
+            }
+            else if (player.HasWaypoint("stage3"))
+            {
+               return "You don't want to start a conversation with anyone will Rys is here."; 
             }
             else if (player.HasWaypoint("stage2"))
             {

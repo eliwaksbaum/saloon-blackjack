@@ -138,7 +138,8 @@ public class Game
         player.current_room = intro;
         
         player.current_room = saloon;
-        player.AddWaypoint("firstgame");
+        //player.AddWaypoint("firstgame");
+        player.AddToInventory(new GameObject("quarter"));
 
         return world;
     }

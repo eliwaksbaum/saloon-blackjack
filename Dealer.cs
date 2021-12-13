@@ -16,12 +16,12 @@ public class Dealer : GameObject
             {
                 if (player.HasWaypoint("stage4"))
                 {
-                    return "'That was quite the hand you got there.'";
+                    return player.HasWaypoint("hascode") ? "'That was quite the hand you got there.'" :
+                        "'You have good taste in music. Why don't you play a hand?'";;
                 }
                 else if (player.HasWaypoint("stage3"))
                 {
-                    player.AddWaypoint("rig game");
-                    return "'You have good taste in music. Why don't you play a hand?'";
+                    return "You don't want to start a conversation with anyone will Rys is here.";
                 }
                 else //stage 1 or 2
                 {

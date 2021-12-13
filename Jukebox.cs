@@ -4,9 +4,11 @@ using System.Collections.Generic;
 public class Jukebox : GameObject
 {
     static Jukebox singleton;
+    SPlayer player;
 
     public Jukebox(SPlayer player) : base("jukebox")
     {
+        this.player = player;
         singleton = this;
         SetCondition("on", false);
         SetCondition("playing", false);
@@ -69,6 +71,7 @@ public class Jukebox : GameObject
             if (code == "2H")
             {
                 singleton.SetCondition("playing", true);
+                singleton.player.AddWaypoint("stage3");
                 return "With a 'kachunk', the old speakers start putting out a tune you don't recognize.";
             }
             else
