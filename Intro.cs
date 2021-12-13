@@ -4,8 +4,8 @@ public class Intro : Room
 {
     public Intro(Player player) : base("intro")
     {
-        description = "You stand outside the saloon. The red neon sign bleeds into the dark purple sky. There's not "
-            + "much around. There's a thug standing by the door and the cabby you hired is leaning against his car, smoking.";
+        description = "You stand outside the SALOON. The red neon sign bleeds into the dark purple sky. There's not "
+            + "much around. A THUG is standing by the door and the CABBY you hired is leaning against his car, smoking.";
         
         AddExit("saloon", "saloon");
         AddExit("the saloon", "saloon");
@@ -37,6 +37,6 @@ public class Intro : Room
             });
         AddObject(cabby);
 
-        OnExit = () => {player.AddWaypoint("stage1");};
+        OnExit = () => {player.AddWaypoint("stage1"); Delete();};
     }
 }

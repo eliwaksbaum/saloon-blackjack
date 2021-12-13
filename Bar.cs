@@ -24,11 +24,21 @@ public static class Bar
 
         public Func<string> DrinkResponse(Player player)
         {
-            return () =>
+            if (ID == "bottle of whiskey")
             {
-                player.RemoveFromInventory(ID);
-                return "You drink the " + ID + ". This place has good stuff";
-            };
+                return () =>
+                {
+                    return "You take a swig of whiskey from the bottle. Not bad.";
+                };
+            }
+            else
+            {
+                return () =>
+                {
+                    player.RemoveFromInventory(ID);
+                    return "You drink the " + ID + ". Not bad.";
+                };
+            }
         }
     }
 
