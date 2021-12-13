@@ -9,7 +9,7 @@ public static class Bar
         public int Price => price;
         string description;
 
-        public Drink(string id, Player player, int price, string description) : base(id, true)
+        public Drink(string id, Player player, int price, string description) : base(id, stackable:true)
         {
             this.price = price;
             this.description = description;

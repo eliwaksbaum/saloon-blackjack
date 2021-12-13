@@ -52,5 +52,16 @@ public class Rys : GameObject
                 return "Rys isn't going to want " + ind + " " + gift + ".";
             }
         });
+
+        SetDitransitiveResponse("show", (item) => {
+            if (item == "signet")
+            {
+                return "Better not. Rys will know how you got that ring and might blow your cover.";
+            }
+            else
+            {
+                return "Rys doesn't seem interested in the " + item + ".";
+            }
+        });
     }
 }

@@ -2,7 +2,7 @@ using Algiers;
 
 public class Dealer : GameObject
 {
-    public Dealer(Player player) : base("the dealer")
+    public Dealer(Player player) : base("dealer", "the dealer")
     {
         SetCondition("proven", false);
 

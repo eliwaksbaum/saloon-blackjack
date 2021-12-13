@@ -2,7 +2,7 @@ using Algiers;
 
 public class Bartender : GameObject
 {
-    public Bartender(Player player) : base("the bartender")
+    public Bartender(Player player) : base("bartender", "the bartender")
     {
         SetCondition("2talk1", false);
         SetCondition("proven", false);

@@ -5,10 +5,8 @@ public class Saloon : Room
     public Saloon(SPlayer player) : base("saloon")
     {
         description = "A smoky, seedy looking place that doesn't seem to know what year it is. There's even a JUKEBOX." +
-            " The BARTENDER stands in front of an empty COUNTER. There's a DEALER running a game of blacjack for a few" +
+            " The BARTENDER stands in front of an empty COUNTER. The DEALER is running a game of blackjack for a few" +
             " people around a table in the corner. All the way in the back, almost hidden in the dark, there's a DOOR with a sign: 'Staff Only'.";
-
-        //AddExit("back room", "lair");
 
         AddObject(new Dealer(player));
         AddObject(new Bartender(player));
