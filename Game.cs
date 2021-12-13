@@ -78,9 +78,21 @@ public class Game
         }
         world.AddTransitiveCommand("drink", Drink(), State.All, "Drink what?");
         world.AddTransitiveCommand("buy", Bar.Buy(player), saloonState, "Buy what?");
-        world.AddIntransitiveCommand("choose a song", Jukebox.ChooseSong, saloonState, new string[] {"choose song"});
+        //world.AddIntransitiveCommand("choose a song", Jukebox.ChooseSong, saloonState, new string[] {"choose song"});
 
-        world.AddDitransitiveCommand("use", CMD.Use(player), notPlayingState, "Use what?", new string[]{"on", "with"});
+        string Use (string tool, string target)
+        {
+            if (tool == "jukebox" || tool == "door")
+            {
+                GameObject toolObj = player.GetFromRoom(tool);
+                return toolObj.GetTransitiveResponse("use")();
+            }
+            else
+            {
+                return CMD.Use(player)(tool, target);
+            }
+        }
+        world.AddDitransitiveCommand("use", Use, notPlayingState, "Use what?", new string[]{"on", "with"});
         
         string Give(string gift, string target)
         {

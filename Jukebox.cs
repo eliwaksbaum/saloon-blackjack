@@ -9,7 +9,7 @@ public class Jukebox : GameObject
     public Jukebox(SPlayer player) : base("jukebox")
     {
         this.player = player;
-        singleton = this;
+        //singleton = this;
         SetCondition("on", false);
         SetCondition("playing", false);
 
@@ -20,7 +20,7 @@ public class Jukebox : GameObject
             }
             else if (GetCondition("on"))
             {
-                return "It's a very old music player. You can play some music if you CHOOSE A SONG.";
+                return "It's a very old music player. You think you can figure out how to use it.";
             }
             else
             {
@@ -41,15 +41,17 @@ public class Jukebox : GameObject
                 return null;
             }
         });
+
+        SetTransitiveResponse("use", ChooseSong);
     }
 
-    public static string ChooseSong()
+    string ChooseSong()
     {
-        if (singleton.GetCondition("playing"))
+        if (GetCondition("playing"))
         {
             return "You'd need another one of those coins to play another song.";
         }
-        else if (singleton.GetCondition("on"))
+        else if (GetCondition("on"))
         {
             Parser.GetParser.GoRaw(SongSelection);
             return "There's a small keypad on the machine. It looks like to pick a song, you need to press a number 0-9 and a letter A-J.";
@@ -60,7 +62,7 @@ public class Jukebox : GameObject
         }
     }
 
-    static string SongSelection(string code)
+    string SongSelection(string code)
     {
         List<string> numbers = new List<string> {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
         List<string> letters = new List<string> {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
@@ -70,8 +72,8 @@ public class Jukebox : GameObject
             Parser.GetParser.GoStandard();
             if (code == "2H")
             {
-                singleton.SetCondition("playing", true);
-                singleton.player.AddWaypoint("stage3");
+                SetCondition("playing", true);
+                player.AddWaypoint("stage3");
                 return "With a 'kachunk', the old speakers start putting out a tune you don't recognize.";
             }
             else
