@@ -32,11 +32,20 @@ public static class Bar
         }
     }
 
-    public static Func<string, string> Buy(Player player)
+    public static Func<string, string> Buy(SPlayer player)
     {  
         return (drinkName) =>
         {
+            if (!player.HasWaypoint("firstdrink"))
+            {
+                player.AddWaypoint("firstdrink");
+            }
             Drink drink = MakeDrink(drinkName, player);
+
+            if (drink.Price == 0)
+            {
+                return "The bartender gives you a look. They must not have any " + drinkName + ".";
+            }
 
             if (player.GetCounter("money") >= drink.Price)
             {

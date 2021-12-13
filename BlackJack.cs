@@ -26,7 +26,7 @@ public class BlackJack
     public string instructions;
     State saloonState;
     World world;
-    Player player;
+    SPlayer player;
 
     public static void AddCommands(World world)
     {
@@ -39,7 +39,7 @@ public class BlackJack
     public BlackJack(World _world)
     {
         world = _world;
-        player = world.player;
+        player = (SPlayer) world.player;
         saloonState = world.player.State;
 
         world.SetIntransitiveResponse(hit, Hit);
@@ -91,6 +91,10 @@ public class BlackJack
 
     string Leave()
     {
+        if (!player.HasWaypoint("firstgame"))
+        {
+            player.AddWaypoint("firstgame");
+        }
         player.State = saloonState;
         return "You stand up from the game table. You've had enough BlackJack for now.";
     }

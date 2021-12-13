@@ -10,9 +10,10 @@ public class Game
         State notPlayingState = BlackJack.blackjackState.Inverse();
 
         World world = new World();
-        world.start = "Welcome to the Saloon";
+        world.start = "You come to in the back seat of the cab as it comes to a stop. You're here.\n(Type 'help' for a list of commands)";
 
-        Player player = world.player;
+        SPlayer player = new SPlayer();
+        world.player = player;
         player.State = saloonState;
         player.AddCounter("money");
 
