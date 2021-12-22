@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public class Jukebox : GameObject
 {
-    static Jukebox singleton;
     SPlayer player;
 
     public Jukebox(SPlayer player) : base("jukebox")

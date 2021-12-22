@@ -16,7 +16,7 @@ public class Bartender : GameObject
             }
             else if (player.HasWaypoint("stage3"))
             {
-               return "You don't want to start a conversation with anyone will Rys is here."; 
+               return "You don't want to start a conversation with anyone while Rys is here."; 
             }
             else if (player.HasWaypoint("stage2"))
             {

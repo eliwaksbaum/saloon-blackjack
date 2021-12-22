@@ -11,7 +11,7 @@ public class Rys : GameObject
 
         SetTransitiveResponse("what", () => {
             return "Rys. Motherfuckin. Lee. Not one bigger asshole (or asshole more allergic to nuts) in the solar system. You don't know" +
-            " why he's here but you do know it means trouble. Rys knows your not a 'brother in arms' or whatever. You're gonna have to do" +
+            " why he's here but you do know it means trouble. Rys knows your not a 'brother in arms' or whatever. You're going to have to do" +
             " something about this.";
         });
 

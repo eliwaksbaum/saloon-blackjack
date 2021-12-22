@@ -175,6 +175,7 @@ public class BlackJack
         message += Announce();
         if (playerScore == 21)
         {
+            player.State = inOrOutState;
             message += "\nBlackjack! " + PayOut(true) + "\nPlay again or leave?";
         }
         else

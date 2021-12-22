@@ -6,6 +6,7 @@ public class Game
 {
     public static World SetWorld()
     {
+        State introState = new State();
         State saloonState = new State();
         State notPlayingState = BlackJack.blackjackState.Inverse();
 
@@ -14,8 +15,6 @@ public class Game
 
         SPlayer player = new SPlayer();
         world.player = player;
-        player.State = saloonState;
-        player.AddCounter("money");
 
         string PlayBlackJack()
         {
@@ -50,8 +49,8 @@ public class Game
         world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("take", CMD.Take(player), notPlayingState, "Take what?");
-        world.AddTransitiveCommand("talk", CMD.Talk(player), State.All, "Talk to whom?", preps: new string[]{"to"});
-        world.AddTransitiveCommand("go", CMD.Go(player, world), saloonState, "go where?", new string[]{"go to", "go to the", "enter", "enter the"});
+        world.AddTransitiveCommand("talk", CMD.Talk(player), notPlayingState, "Talk to whom?", preps: new string[]{"to"});
+        world.AddTransitiveCommand("go", CMD.Go(player, world), notPlayingState, "go where?", new string[]{"go to", "enter"});
 
         Func<string, string> Drink()
         {
@@ -151,22 +150,24 @@ public class Game
                 }
             }
         }
-        world.AddDitransitiveCommand("show", Show, State.All, "Show what?", new string[]{"to"});
-
-        player.IncrementCounter("money", 10);
+        world.AddDitransitiveCommand("show", Show, notPlayingState, "Show what?", new string[]{"to"});
 
         Room intro = new Intro(player);
         world.AddRoom(intro);
         Room saloon = new Saloon(player);
+        saloon.OnEnter = () => {player.State = saloonState;};
         world.AddRoom(saloon);
         
         player.current_room = intro;
+        player.State = introState;
+        player.AddCounter("money");
+        player.IncrementCounter("money", 20);
         
-        player.current_room = saloon;
-        //player.AddWaypoint("firstgame");
-        //player.AddToInventory(new GameObject("quarter"));
-        saloon.AddObject(new Rys(player));
-        player.AddToInventory(new GameObject("peanut tequila"));
+        // player.current_room = saloon;
+        // //player.AddWaypoint("firstgame");
+        // //player.AddToInventory(new GameObject("quarter"));
+        // saloon.AddObject(new Rys(player));
+        // player.AddToInventory(new GameObject("peanut tequila"));
 
         return world;
     }

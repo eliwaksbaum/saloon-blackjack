@@ -8,7 +8,7 @@ public class Dealer : GameObject
 
         string Talk()
         {
-            if (player.State == BlackJack.blackjackState)
+            if (player.State.IsWithin(BlackJack.blackjackState))
             {
                 return "You try to get the dealer's attention but he ignores you. A professional, it seems.";
             }
@@ -21,7 +21,7 @@ public class Dealer : GameObject
                 }
                 else if (player.HasWaypoint("stage3"))
                 {
-                    return "You don't want to start a conversation with anyone will Rys is here.";
+                    return "You don't want to start a conversation with anyone while Rys is here.";
                 }
                 else //stage 1 or 2
                 {
