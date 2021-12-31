@@ -129,11 +129,18 @@ public class BlackJack
     string Announce()
     {
         string cards = "";
-        foreach (int card in better)
+        if (better.Count == 2)
         {
-            cards += " " + CardName(card);
+            cards = CardName(better[0]) + " and " + CardName(better[1]);
         }
-        return "The dealer's face up card is " + CardName(dealer[0]) + ". Your cards are" + cards + ".";
+        else
+        {
+            for (int i = 0; i < better.Count; i++)
+            {
+                cards += (i != better.Count - 1) ? CardName(better[i]) + ", " : "and " + CardName(better[i]);
+            }
+        }
+        return "The dealer's face up card is " + CardName(dealer[0]) + ". Your cards are " + cards + ".";
     }
 
     public string Start()
@@ -208,12 +215,28 @@ public class BlackJack
 
     string DealersPlay()
     {
-        string readoff = dealerScore < 17? ". They draw " : "";
+        string readoff = dealerScore < 17? ". They draw a " : "";
+        List<string> draws = new List<string>();
         while (dealerScore < 17)
         {
             int newCard = Deal();
             dealer.Add(newCard);
-            readoff += CardName(newCard) + " ";
+            draws.Add(CardName(newCard));
+        }
+        if (draws.Count == 1)
+        {
+            readoff += draws[0];
+        }
+        else if (draws.Count == 2)
+        {
+            readoff += draws[0] + " and " + draws[1];
+        }
+        else
+        {
+            for (int i = 0; i < draws.Count; i++)
+            {
+                readoff += (i != draws.Count - 1) ? draws[i] + ", " : "and " + draws[i];
+            }
         }
         return "The dealer's cards are " + CardName(dealer[0]) + " and " + CardName(dealer[1]) +
             readoff + ".\n";
