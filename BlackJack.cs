@@ -34,6 +34,20 @@ public class BlackJack
         stay = world.AddIntransitiveCommand("stay", null, hitOrStayState);
         play = world.AddIntransitiveCommand("play", null, inOrOutState);
         leave = world.AddIntransitiveCommand("leave", null, inOrOutState);
+
+        world.AddIntransitiveCommand("help", HitHelp, hitOrStayState);
+        world.AddIntransitiveCommand("help", PlayHelp, inOrOutState);
+    }
+
+    static string HitHelp()
+    {
+        return "The goal is to get have your cards add up to a higher number than the dealer's, without going over 21. Face cards"
+            + " are worth 10, and aces are worth 11 or 1, whichever is to your advantage."
+            + " Type 'hit' to receive another card, or type 'stay' if you're happy with the cards you have.";
+    }
+    static string PlayHelp()
+    {
+        return "Type 'play' if you want to play another round of BlackJack, or type 'leave' if you want to stop playing.";
     }
 
     public BlackJack(World _world)

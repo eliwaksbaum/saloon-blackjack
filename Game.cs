@@ -23,6 +23,44 @@ public class Game
         }
         world.AddIntransitiveCommand("play blackjack", PlayBlackJack, saloonState);
         BlackJack.AddCommands(world);
+
+        string Help()
+        {
+            string instructions = 
+            "inv - view your inventory\n" +
+            "look - have a look around\n" +
+            "examine - take a closer look at something or someone\n" +
+            "enter - enter a room\n" +
+            "talk (to) - talk to someone\n" +
+            "take - pick something up and add it to your inventory\n" +
+            "use - use a tool or machine\n" +
+            "use .. on/with - use an item in your inventory with another object\n" +
+            "give .. to - give an item in your inventory to someone else";
+            
+
+            if (player.HasWaypoint("stage1"))
+            {
+                instructions +=
+                "\nbuy - buy a drink from the bar" + 
+                "\ndrink - drink something in your inventory" +
+                "\nplay blackjack - play a round of blackjack" +
+                "\nopen - try to open the door";
+            }
+            if (player.HasWaypoint("stage2"))
+            {
+                instructions += "\nshow .. to - show an item in your inventory to someone else";
+            }
+
+            instructions += "\nhelp - see available actions\nquit - quit the game";
+
+            if (player.HasWaypoint("stage3") && !player.HasWaypoint("stage4"))
+            {
+                instructions += "\nYou need to find a way to get Rys out of here.";
+            }
+
+            return instructions;
+        }
+        world.AddIntransitiveCommand("help", Help, notPlayingState);
         
         world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState, new string[]{"look around"});
         
@@ -48,10 +86,10 @@ public class Game
         world.AddIntransitiveCommand("quit", () => {world.done = true; return "See you, cowboy.";}, State.All);
 
         world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
-        world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "Examine what?");
+        //world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("take", CMD.Take(player), notPlayingState, "Take what?");
         world.AddTransitiveCommand("talk", CMD.Talk(player), notPlayingState, "Talk to whom?", preps: new string[]{"to"});
-        world.AddTransitiveCommand("go", CMD.Go(player, world), notPlayingState, "go where?", new string[]{"go to", "enter"});
+        world.AddTransitiveCommand("enter", CMD.Go(player, world), notPlayingState, "enter where?");
 
         Func<string, string> Drink()
         {
