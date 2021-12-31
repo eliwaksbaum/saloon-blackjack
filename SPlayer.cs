@@ -56,7 +56,7 @@ public class SPlayer : Player
         {
             string stage4 = "Rys takes a sip from the poisoned tequila and his face immediately goes red. His eyes bulge as he claws at his throat" +
                 " struggling to breathe. You shout for a doctor. The thug from outside walks in, sees Rys on the floor, and carries him out of the bar." +
-                " Rys stares at you the whole way out.";
+                " You see Rys staring at you just until the door swings closed.";
                 
             Parser.GetParser.AddAfterword(stage4);
         }

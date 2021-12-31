@@ -24,12 +24,12 @@ public class Intro : Room
             cabby.SetTransitiveResponse("talk", () => {
                 if (cabby.GetCondition("talk1"))
                 {
-                    cabby.SetCondition("talk1", true);
-                    return "''This is certainly an ... interesting part of town. You take care in there, dead people don't pay their fares.'";
+                    return "'Better hurry up. Meter's running.'";
                 }
                 else
                 {
-                    return "'Better hurry up. Meter's running.'";
+                    cabby.SetCondition("talk1", true);
+                    return "''This is certainly an ... interesting part of town. You take care in there, dead people don't pay their fares.'";
                 }
             });
             cabby.SetTransitiveResponse("what", () => {
