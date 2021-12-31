@@ -45,6 +45,7 @@ public class Game
             }
         }
         world.AddIntransitiveCommand("inv", Inv, State.All);
+        world.AddIntransitiveCommand("quit", () => {world.done = true; return "See you, cowboy.";}, State.All);
 
         world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "Examine what?");
