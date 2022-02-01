@@ -29,7 +29,7 @@ public class Intro : Room
                 else
                 {
                     cabby.SetCondition("talk1", true);
-                    return "''This is certainly an ... interesting part of town. You take care in there, dead people don't pay their fares.'";
+                    return "'This is certainly an ... interesting part of town. You take care in there, dead people don't pay their fares.'";
                 }
             });
             cabby.SetTransitiveResponse("what", () => {

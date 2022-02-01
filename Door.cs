@@ -25,7 +25,10 @@ public class Door : GameObject
                 Parser.GetParser.GoStandard();
                 if (input == player.DoorCode)
                 {
-                    return "You're in!";
+                    player.AddWaypoint("stage5");
+                    player.current_room.OnExit();
+                    player.current_room = new Backroom();
+                    return "You're in! blam blam";
                 }
                 else
                 {

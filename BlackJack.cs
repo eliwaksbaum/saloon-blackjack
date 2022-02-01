@@ -50,9 +50,8 @@ public class BlackJack
         return "Type 'play' if you want to play another round of BlackJack, or type 'leave' if you want to stop playing.";
     }
 
-    public BlackJack(World _world)
+    public BlackJack(World world)
     {
-        world = _world;
         player = (SPlayer) world.player;
         saloonState = world.player.State;
 

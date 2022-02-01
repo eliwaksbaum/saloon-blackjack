@@ -38,7 +38,7 @@ public class Game
             "give .. to - give an item in your inventory to someone else";
             
 
-            if (player.HasWaypoint("stage1"))
+            if (player.State == saloonState)
             {
                 instructions +=
                 "\nbuy - buy a drink from the bar" + 
@@ -46,9 +46,15 @@ public class Game
                 "\nplay blackjack - play a round of blackjack" +
                 "\nopen - try to open the door";
             }
+
             if (player.HasWaypoint("stage2"))
             {
                 instructions += "\nshow .. to - show an item in your inventory to someone else";
+            }
+
+            if (player.HasWaypoint("stage5"))
+            {
+                instructions += "\nshoot - shoot something in the room";
             }
 
             instructions += "\nhelp - see available actions\nquit - quit the game";
@@ -86,7 +92,6 @@ public class Game
         world.AddIntransitiveCommand("quit", () => {world.done = true; return "See you, cowboy.";}, State.All);
 
         world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
-        //world.AddTransitiveCommand("what", CMD.What(player), notPlayingState, "Examine what?");
         world.AddTransitiveCommand("take", CMD.Take(player), notPlayingState, "Take what?");
         world.AddTransitiveCommand("talk", CMD.Talk(player), notPlayingState, "Talk to whom?", preps: new string[]{"to"});
         world.AddTransitiveCommand("enter", CMD.Go(player, world), notPlayingState, "enter where?");
@@ -169,38 +174,71 @@ public class Game
             {
                 return "Show " + item + " to whom?";
             }
-            else if (!player.CanAccessObject(target))
+            else if (!player.InRoom(target))
             {
                 return "There is nobody named " + target + " here to show the " + item + " to.";
             }
             else
             {
                 GameObject targetObj = player.GetFromRoom(target);
-                Func<string, string> give = targetObj.GetDitransitiveResponse("show");
+                Func<string, string> show = targetObj.GetDitransitiveResponse("show");
                 string nullHandler = "You can't show the " + item + " to " + target + ".";
-                if (give == null)
+                if (show == null)
                 {
                     return nullHandler;
                 }
                 else
                 {
-                    string response = give(item);
-                    return (response == null)? nullHandler : response;
+                    string response = show(item);
+                    return response == null ? nullHandler : response;
                 }
             }
         }
         world.AddDitransitiveCommand("show", Show, notPlayingState, "Show what?", new string[]{"to"});
 
+        State fightState = new State();
+        string Shoot(string target)
+        {
+            if (!player.InRoom(target))
+            {
+                return "There's no " + target + " here to shoot";
+            }
+            else
+            {
+                GameObject targetObj = player.GetFromRoom(target);
+                Func<string> shoot = targetObj.GetTransitiveResponse("shoot");
+                string nullHandler = "You can't shoot the " + target;
+                if (shoot == null)
+                {
+                    return nullHandler;
+                }
+                else
+                {
+                    player.IncrementCounter("ammo", -1);
+                    int ammo = player.GetCounter("ammo");
+                    if (ammo == 0)
+                    {
+                        Parser.GetParser.AddAfterword("Fuck");
+                    }
+                    string response = shoot() + "\n" + ammo;
+                    response += ammo == 1? " shot left." : "shots left.";
+                    return response == null ? nullHandler : response;
+                }
+            }
+        }
+        world.AddTransitiveCommand("shoot", Shoot, fightState, "Shoot what?");
+
         Room intro = new Intro(player);
         world.AddRoom(intro);
         Room saloon = new Saloon(player);
         saloon.OnEnter = () => {player.State = saloonState;};
+        saloon.OnExit = () => {player.State = fightState; saloon.Delete();};
         world.AddRoom(saloon);
         
         player.current_room = intro;
         player.State = introState;
-        player.AddCounter("money");
-        player.IncrementCounter("money", 20);
+        player.AddCounter("money", 20);
+        player.AddCounter("ammo", 6);
         
         // player.current_room = saloon;
         // //player.AddWaypoint("firstgame");

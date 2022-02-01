@@ -1,4 +1,5 @@
 using Algiers;
+using Algiers.StartKit;
 using System;
 
 public class SPlayer : Player
@@ -22,6 +23,7 @@ public class SPlayer : Player
         code[0] = codes[setI, firstI];
         code[1] = codes[setI, (firstI + 1)%3];
         code[2] = codes[setI, (firstI + 2)%3];
+        Console.WriteLine(code[0]+code[1]+code[2]); //YO
         return code[0]+code[1]+code[2];
     }
 
