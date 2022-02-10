@@ -10,16 +10,18 @@ public class Backroom : Room
     Goon kwim = new Goon("kwim", 0.0f);
     Goon letta = new Goon("letta", 0.5f);
     Goon skinner = new Goon("skinner", 0.0f);
+    bool lightsout;
+
+    string light = "The room behind the door is pretty sparse. A single LIGHTBULB hangs from the ceiling, making it feel like a basement."
+            + " The door back to the SALOON stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
+    string dark = "With the light out, you can't see anything";
+    new string description => lightsout ? light : dark;
 
     public Backroom(Player player) : base("backroom")
     {
         this.player = player;
         player.State = fightState;
         World.GetWorld.AddTransitiveCommand("shoot", Shoot, fightState, "Shoot what?");
-
-
-        description = "The room behind the door is pretty sparse. A single LIGHTBULB hangs from the ceiling, making it feel like a basement."
-            + " The door back to the SALOON stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
 
         GameObject can = new GameObject("can");
         can.SetTransitiveResponse("shoot", () => {return "clang";});
@@ -47,6 +49,14 @@ public class Backroom : Room
         skinner.SetTransitiveResponse("talk", sTalk);
         AddObject(skinner);
 
+        GameObject bulb = new GameObject("lightbulb");
+        bulb.SetTransitiveResponse("what", () => {
+            return "A dimly pulsing lightbulb. Keeping with the theme, it looks like it actually has a filament inside.";
+        });
+        bulb.SetTransitiveResponse("shoot", () => {
+            lightsout = true;
+            return "The bulb shatters and the room goes pitch black.";
+        });
     }
 
     string kLook()
@@ -118,10 +128,31 @@ public class Backroom : Room
                 {
                     Parser.GetParser.AddAfterword("Fuck");
                 }
-                string response = shoot() + "\n\n  " + ammo;
-                response += ammo == 1? " shot left." : " shots left.";
-                return response == null ? "The bullet ricochets off the " + target + "." : response;
+
+                if (lightsout)
+                {
+                    return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
+                }
+                else
+                {
+                    string response = shoot() + "\n\n  " + ammo;
+                    response += ammo == 1? " shot left." : " shots left.";
+                    return response == null ? "The bullet ricochets off the " + target + "." : response;
+                }
             }
         }
     }
+
+    //TODO:
+        //Scram: if lightsout, you can runaway back into the saloon. if you've subdued everyone, you can leave into the alley
+            // this is gonna be a new "enter" command in the fightstate. we're not using CMD.GO since there are no exits here
+            // and we don't actually enter the room, the game just ends
+
+        //Shooting the vent freaks kwim out, nab 'em. I guess that means we need a way to change a goon's odds
+
+        //Shooting other objects does stuff?
+
+        //IDK if it goes in this class, but if you run out of bullets you die. Or maybe if you shoot the wrong thing it blows up?
+            //then should you start over from scratch or just the fight?
+                //just the fight is actually so doable. just reset ammo and make a new backroom object
 }

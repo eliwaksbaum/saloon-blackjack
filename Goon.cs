@@ -31,6 +31,7 @@ public class Goon : GameObject
             if (roll > odds)
             {
                 isDead = true;
+                Delete();
                 return "You take careful aim and " + name + " hits the floor.";
             }
             else
