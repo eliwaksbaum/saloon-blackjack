@@ -41,7 +41,7 @@ public class BlackJack
 
     static string HitHelp()
     {
-        return "The goal is to get have your cards add up to a higher number than the dealer's, without going over 21. Face cards"
+        return "The goal is for your cards add up to a higher number than the dealer's, without going over 21. Face cards"
             + " are worth 10, and aces are worth 11 or 1, whichever is to your advantage."
             + " Type 'hit' to receive another card, or type 'stay' if you're happy with the cards you have.";
     }

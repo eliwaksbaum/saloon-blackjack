@@ -7,6 +7,8 @@ public class Dealer : GameObject
 
     public Dealer(Player player) : base("dealer", "the dealer")
     {
+        this.player = player;
+        
         SetTransitiveResponse("talk", Talk);
         SetDitransitiveResponse("show", Show);
 
@@ -44,7 +46,7 @@ public class Dealer : GameObject
         if (item == "signet")
         {
             string phrase = "'I'm most pleased to welcome a brother in arms.";
-            if (proven)
+            if (!proven)
             {
                 proven = true;
                 phrase += " A little music would make it more lively in here, don't you think?'\n A strange looking coin" +
