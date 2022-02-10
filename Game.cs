@@ -7,7 +7,6 @@ public class Game
     State introState = new State();
     State saloonState = new State();
     State notPlayingState = BlackJack.blackjackState.Inverse();
-    State fightState = new State();
 
     World world = new World();
     SPlayer player = new SPlayer();
@@ -18,7 +17,7 @@ public class Game
         world.player = player;
 
         world.AddIntransitiveCommand("play blackjack", PlayBlackJack, saloonState);
-        BlackJack.AddCommands(world);
+        BlackJack.AddCommands();
         
         world.AddIntransitiveCommand("help", Help, notPlayingState);
         world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState, new string[]{"look around"});
@@ -40,13 +39,11 @@ public class Game
         world.AddDitransitiveCommand("give", Give, notPlayingState, "Give what?", new string[]{"to"});
         world.AddDitransitiveCommand("show", Show, notPlayingState, "Show what?", new string[]{"to"});
 
-        world.AddTransitiveCommand("shoot", Shoot, fightState, "Shoot what?");
-
         Room intro = new Intro(player);
         world.AddRoom(intro);
         Room saloon = new Saloon(player);
         saloon.OnEnter = () => {player.State = saloonState;};
-        saloon.OnExit = () => {player.State = fightState; saloon.Delete();};
+        saloon.OnExit = () => {saloon.Delete();};
         world.AddRoom(saloon);
         
         player.current_room = intro;
@@ -59,7 +56,7 @@ public class Game
 
     string PlayBlackJack()
     {
-        BlackJack game = new BlackJack(world);
+        BlackJack game = new BlackJack(player);
         return game.Start();
     }
 
@@ -214,35 +211,6 @@ public class Game
             else
             {
                 string response = show(item);
-                return response == null ? nullHandler : response;
-            }
-        }
-    }
-
-    string Shoot(string target)
-    {
-        if (!player.InRoom(target))
-        {
-            return "There's no " + target + " here to shoot";
-        }
-        else
-        {
-            GameObject targetObj = player.GetFromRoom(target);
-            Func<string> shoot = targetObj.GetTransitiveResponse("shoot");
-            string nullHandler = "You can't shoot the " + target;
-            if (shoot == null)
-            {
-                return nullHandler;
-            }
-            else
-            {
-                int ammo = player.IncrementCounter("ammo", -1);
-                if (ammo == 0)
-                {
-                    Parser.GetParser.AddAfterword("Fuck");
-                }
-                string response = shoot() + "\n" + ammo;
-                response += ammo == 1? " shot left." : "shots left.";
                 return response == null ? nullHandler : response;
             }
         }

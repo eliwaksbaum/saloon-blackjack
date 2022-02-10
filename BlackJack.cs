@@ -25,18 +25,17 @@ public class BlackJack
 
     public string instructions;
     State saloonState;
-    World world;
     SPlayer player;
 
-    public static void AddCommands(World world)
+    public static void AddCommands()
     {
-        hit = world.AddIntransitiveCommand("hit", null, hitOrStayState);
-        stay = world.AddIntransitiveCommand("stay", null, hitOrStayState);
-        play = world.AddIntransitiveCommand("play", null, inOrOutState);
-        leave = world.AddIntransitiveCommand("leave", null, inOrOutState);
+        hit = World.GetWorld.AddIntransitiveCommand("hit", null, hitOrStayState);
+        stay = World.GetWorld.AddIntransitiveCommand("stay", null, hitOrStayState);
+        play = World.GetWorld.AddIntransitiveCommand("play", null, inOrOutState);
+        leave = World.GetWorld.AddIntransitiveCommand("leave", null, inOrOutState);
 
-        world.AddIntransitiveCommand("help", HitHelp, hitOrStayState);
-        world.AddIntransitiveCommand("help", PlayHelp, inOrOutState);
+        World.GetWorld.AddIntransitiveCommand("help", HitHelp, hitOrStayState);
+        World.GetWorld.AddIntransitiveCommand("help", PlayHelp, inOrOutState);
     }
 
     static string HitHelp()
@@ -50,15 +49,15 @@ public class BlackJack
         return "Type 'play' if you want to play another round of BlackJack, or type 'leave' if you want to stop playing.";
     }
 
-    public BlackJack(World world)
+    public BlackJack(SPlayer player)
     {
-        player = (SPlayer) world.player;
-        saloonState = world.player.State;
+        this.player = player;
+        saloonState = player.State;
 
-        world.SetIntransitiveResponse(hit, Hit);
-        world.SetIntransitiveResponse(stay, Stay);
-        world.SetIntransitiveResponse(play, Start);
-        world.SetIntransitiveResponse(leave, Leave);
+        World.GetWorld.SetIntransitiveResponse(hit, Hit);
+        World.GetWorld.SetIntransitiveResponse(stay, Stay);
+        World.GetWorld.SetIntransitiveResponse(play, Start);
+        World.GetWorld.SetIntransitiveResponse(leave, Leave);
     }
 
     string Hit()

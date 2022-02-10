@@ -28,7 +28,7 @@ public class Door : GameObject
             {
                 player.AddWaypoint("stage5");
                 player.current_room.OnExit();
-                player.current_room = new Backroom();
+                player.current_room = new Backroom(player);
                 return "You're in! blam blam";
             }
             else
