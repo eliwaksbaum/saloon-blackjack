@@ -8,7 +8,6 @@ public class Jukebox : GameObject
     public Jukebox(SPlayer player) : base("jukebox")
     {
         this.player = player;
-        //singleton = this;
         SetCondition("on", false);
         SetCondition("playing", false);
 
