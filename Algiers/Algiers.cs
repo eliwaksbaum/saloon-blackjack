@@ -286,24 +286,22 @@ namespace Algiers
             return waypoints.Contains(point);
         }
         
-        public void AddCounter(string counter)
-        {
-            counters.Add(counter, 0);
-        }
-        public void AddCounter(string counter, int init)
+        public int AddCounter(string counter, int init = 0)
         {
             counters.Add(counter, init);
+            return init;
         }
         public int GetCounter(string counter)
         {
             return counters[counter];
         }
-        public void IncrementCounter(string counter, int increment = 1)
+        public int IncrementCounter(string counter, int increment = 1)
         {
             if (counters.ContainsKey(counter))
             {
                 counters[counter] += increment;
             }
+            return counters[counter];
         }
 
         public bool InInventory(GameObject target)
@@ -934,7 +932,7 @@ namespace Algiers
 
         string HandleTransitive(Command cmd, string[] words, int head)
         {
-            if (cmd.Preps != null && words.Length > 1)
+            if (cmd.Preps != null)
             {
                 foreach (string prep in cmd.Preps)
                 {
