@@ -2,8 +2,12 @@ using Algiers;
 
 public class Intro : Room
 {
+    State introState = new State();
+
     public Intro(Player player) : base("intro")
     {
+        player.State = introState;
+        
         description = "You stand outside the SALOON. The red neon sign bleeds into the dark purple sky. There's not "
             + "much around. A THUG is standing by the door and the CABBY you hired is leaning against his car, smoking.";
         

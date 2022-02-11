@@ -4,10 +4,6 @@ using System;
 
 public class Game
 {
-    State introState = new State();
-    State saloonState = new State();
-    State notPlayingState = BlackJack.blackjackState.Inverse();
-
     World world = new World();
     SPlayer player = new SPlayer();
 
@@ -15,49 +11,34 @@ public class Game
     {
         world.start = "You come to in the back seat of the cab as it comes to a stop. You're here.\n(Type 'help' for a list of commands)";
         world.player = player;
-
-        world.AddIntransitiveCommand("play blackjack", PlayBlackJack, saloonState);
-        BlackJack.AddCommands();
         
-        world.AddIntransitiveCommand("help", Help, notPlayingState);
-        world.AddIntransitiveCommand("look", CMD.Look(player), notPlayingState, new string[]{"look around"});
+        world.AddIntransitiveCommand("help", Help, State.Default);
+        world.AddIntransitiveCommand("look", CMD.Look(player), State.Default, new string[]{"look around"});
         world.AddIntransitiveCommand("inv", Inv, State.All);
         world.AddIntransitiveCommand("quit", () => {world.done = true; return "See you, cowboy.";}, State.All);
 
-        world.AddTransitiveCommand("examine", CMD.What(player), notPlayingState, "Examine what?");
-        world.AddTransitiveCommand("take", CMD.Take(player), notPlayingState, "Take what?");
-        world.AddTransitiveCommand("talk", CMD.Talk(player), notPlayingState, "Talk to whom?", preps: new string[]{"to"});
-        world.AddTransitiveCommand("enter", CMD.Go(player, world), notPlayingState, "enter where?");
+        world.AddTransitiveCommand("examine", CMD.What(player), State.Default, "Examine what?");
+        world.AddTransitiveCommand("take", CMD.Take(player), State.Default, "Take what?");
+        world.AddTransitiveCommand("talk", CMD.Talk(player), State.Default, "Talk to whom?", preps: new string[]{"to"});
+        world.AddTransitiveCommand("enter", CMD.Go(player, world), State.Default, "enter where?");
 
         
         world.AddTransitiveCommand("drink", Drink(), State.All, "Drink what?");
-        world.AddTransitiveCommand("buy", Bar.Buy(player), saloonState, "Buy what?");
-        world.AddTransitiveCommand("open", Open, saloonState, "Open what?");
-
         
-        world.AddDitransitiveCommand("use", Use, notPlayingState, "Use what?", new string[]{"on", "with"});
-        world.AddDitransitiveCommand("give", Give, notPlayingState, "Give what?", new string[]{"to"});
-        world.AddDitransitiveCommand("show", Show, notPlayingState, "Show what?", new string[]{"to"});
+        world.AddDitransitiveCommand("use", Use, State.Default, "Use what?", new string[]{"on", "with"});
+        world.AddDitransitiveCommand("give", Give, State.Default, "Give what?", new string[]{"to"});
+        world.AddDitransitiveCommand("show", Show, State.Default, "Show what?", new string[]{"to"});
 
         Room intro = new Intro(player);
         world.AddRoom(intro);
         Room saloon = new Saloon(player);
-        saloon.OnEnter = () => {player.State = saloonState;};
-        saloon.OnExit = () => {saloon.Delete();};
         world.AddRoom(saloon);
         
         player.current_room = intro;
-        player.State = introState;
         player.AddCounter("money", 20);
         player.AddCounter("ammo", 6);
 
         return world;
-    }
-
-    string PlayBlackJack()
-    {
-        BlackJack game = new BlackJack(player);
-        return game.Start();
     }
 
     string Help()
@@ -74,7 +55,7 @@ public class Game
         "give .. to - give an item in your inventory to someone else";
         
 
-        if (player.State == saloonState)
+        if (player.HasWaypoint("stage1"))
         {
             instructions +=
             "\nbuy - buy a drink from the bar" + 
@@ -144,19 +125,6 @@ public class Game
                 }
             }
         };
-    }
-
-    string Open(string target)
-    {
-        if (target == "door")
-        {
-            GameObject door = player.GetFromRoom("door");
-            return door.GetTransitiveResponse("open")();
-        }
-        else
-        {
-            return "You can't open the " + target + ".";
-        }
     }
 
     string Use(string tool, string target)
