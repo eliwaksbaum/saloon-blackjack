@@ -1,4 +1,5 @@
 using Algiers;
+using Algiers.StartKit;
 using System;
 using System.Collections.Generic;
 
@@ -14,20 +15,21 @@ public class BlackJack
     Random rand = new Random();
     int bet;
 
-    static State inOrOutState = new State();
-    static State hitOrStayState = new State();
+    static State inOrOutState = new State(false);
+    static State hitOrStayState = new State(false);
     public static State blackjackState = inOrOutState.Compose(hitOrStayState);
     
     static Command hit;
     static Command stay;
     static Command play;
     static Command leave;
+    static bool added;
 
     public string instructions;
     State saloonState;
     SPlayer player;
 
-    public static void AddCommands()
+    public static void AddCommands(Player player)
     {
         hit = World.GetWorld.AddIntransitiveCommand("hit", null, hitOrStayState);
         stay = World.GetWorld.AddIntransitiveCommand("stay", null, hitOrStayState);
@@ -36,6 +38,8 @@ public class BlackJack
 
         World.GetWorld.AddIntransitiveCommand("help", HitHelp, hitOrStayState);
         World.GetWorld.AddIntransitiveCommand("help", PlayHelp, inOrOutState);
+        World.GetWorld.AddTransitiveCommand("talk", CMD.Talk(player), blackjackState, "Talk to whom?", preps: new string[]{"to"});
+        //look
     }
 
     static string HitHelp()
@@ -53,6 +57,12 @@ public class BlackJack
     {
         this.player = player;
         saloonState = player.State;
+
+        if (!added)
+        {
+            AddCommands(player);
+            added = true;
+        }
 
         World.GetWorld.SetIntransitiveResponse(hit, Hit);
         World.GetWorld.SetIntransitiveResponse(stay, Stay);
