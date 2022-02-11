@@ -10,18 +10,17 @@ public class Backroom : Room
     Goon kwim = new Goon("kwim", 0.0f);
     Goon letta = new Goon("letta", 0.5f);
     Goon skinner = new Goon("skinner", 0.0f);
-    bool lightsout;
-
-    string light = "The room behind the door is pretty sparse. A single LIGHTBULB hangs from the ceiling, making it feel like a basement."
-            + " The door back to the SALOON stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
-    string dark = "With the light out, you can't see anything";
-    new string description => lightsout ? light : dark;
 
     public Backroom(Player player) : base("backroom")
     {
+        description = "The room behind the door is pretty sparse. A single LIGHTBULB hangs from the ceiling, making it feel like a basement."
+            + " The door back to the SALOON stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
+
         this.player = player;
         player.State = fightState;
-        World.GetWorld.AddTransitiveCommand("shoot", Shoot, fightState, "Shoot what?");
+        World.GetWorld.AddTransitiveCommand("shoot", LightShoot, fightState, "Shoot what?");
+        World.GetWorld.AddTransitiveCommand("shoot", DarkShoot, darkState, "Shoot what?");
+        World.GetWorld.AddIntransitiveCommand("look", () => {return "You can't see anything with the light out.";}, darkState);
 
         GameObject can = new GameObject("can");
         can.SetTransitiveResponse("shoot", () => {return "clang";});
@@ -54,9 +53,10 @@ public class Backroom : Room
             return "A dimly pulsing lightbulb. Keeping with the theme, it looks like it actually has a filament inside.";
         });
         bulb.SetTransitiveResponse("shoot", () => {
-            lightsout = true;
+            player.State = darkState;
             return "The bulb shatters and the room goes pitch black.";
         });
+        AddObject(bulb);
     }
 
     string kLook()
@@ -107,11 +107,27 @@ public class Backroom : Room
         }
     }
 
-    string Shoot(string target)
+    void UseAmmo()
+    {
+        int ammo = player.IncrementCounter("ammo", -1);
+        string count = "";
+        if (ammo == 0)
+        {
+            count = "Fuck.";
+        }
+        else
+        {
+            count = ammo == 1 ? " shot left." : " shots left.";
+            count = ammo + count;
+        }
+        Parser.GetParser.AddAfterword(count);
+    }
+
+    string LightShoot(string target)
     {
         if (!player.InRoom(target))
         {
-            return "There's no " + target + " here to shoot";
+            return "There's no " + target + " here to shoot.";
         }
         else
         {
@@ -123,24 +139,17 @@ public class Backroom : Room
             }
             else
             {
-                int ammo = player.IncrementCounter("ammo", -1);
-                if (ammo == 0)
-                {
-                    Parser.GetParser.AddAfterword("Fuck");
-                }
-
-                if (lightsout)
-                {
-                    return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
-                }
-                else
-                {
-                    string response = shoot() + "\n\n  " + ammo;
-                    response += ammo == 1? " shot left." : " shots left.";
-                    return response == null ? "The bullet ricochets off the " + target + "." : response;
-                }
+                UseAmmo();
+                string response = shoot();
+                return response == null ? "The bullet ricochets off the " + target + "." : response;
             }
         }
+    }
+
+    string DarkShoot(string target)
+    {
+        UseAmmo();
+        return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
     }
 
     //TODO:
