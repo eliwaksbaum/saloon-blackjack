@@ -42,6 +42,7 @@ public class Backroom : Room
         });
         letta.SetTransitiveResponse("look", lLook);
         letta.SetTransitiveResponse("talk", lTalk);
+        letta.SetCondition("smacked", false);
         AddObject(letta);
         
         skinner.SetTransitiveResponse("what", () => {
@@ -109,6 +110,38 @@ public class Backroom : Room
                 }
             });
         AddObject(vent);
+
+        GameObject fridge = new GameObject("fridge");
+            fridge.SetCondition("shot1", false);
+            fridge.SetCondition("shot2", false);
+            fridge.SetTransitiveResponse("what", () => {
+                string what = "An old fridge that probably used to be white.";
+                what += fridge.GetCondition("shot1") ? " Its top door hangs open." : "For lunch, or for product?";
+                return what;
+            });
+            fridge.SetTransitiveResponse("shoot", () => {
+                if (!fridge.GetCondition("shot1"))
+                {
+                    fridge.SetCondition("shot1", true);
+                    return "You shoot the fridge and its top door is knocked open.";
+                }
+                else if (!fridge.GetCondition("shot2"))
+                {
+                    if (!letta.IsDead)
+                    {
+                        fridge.SetCondition("shot2", true);
+                        letta.SetCondition("smacked", true);
+                        letta.UpdateOdds(0f);
+                        return "The force of the bullet swings the top door of the fridge straight into Letta's face.";
+                    }
+                    return null;
+                }
+                else
+                {
+                    return null;
+                }
+            });
+        AddObject(fridge);
     }
 
     string kLook()
@@ -141,13 +174,21 @@ public class Backroom : Room
 
     string lLook()
     {
-        return "LETTA is crouching behind the FRIDGE on the right side of the room.";
+        if (letta.GetCondition("smacked"))
+        {
+            return letta.IsTalking ? "LETTA seems to have gotten their senses back and made their way behind the couch."
+                : "LETTA is sitting on the floor, dazed, blood dripping down their forehead.";
+        }
+        else
+        {
+            return "LETTA is peeking out from behind the FRIDGE on the right side of the room.";
+        }
     }
     string lTalk()
     {
         if (!(skinner.IsDead && kwim.IsDead))
         {
-            return "LETTA gives you a gesture that makes you certain they're not interested in talking.";
+            return "Letta gives you a gesture that makes you certain they're not interested in talking.";
         }
         else
         {
