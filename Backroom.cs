@@ -50,6 +50,12 @@ public class Backroom : Room
         skinner.SetTransitiveResponse("talk", sTalk);
         AddObject(skinner);
 
+        GameObject cabinet = new GameObject("filing cabinet");
+            cabinet.SetTransitiveResponse("what", () => {
+                return "I guess the Brotherhood likes to keep their files in order.";
+            });
+        AddObject(cabinet);
+
         GameObject bulb = new GameObject("lightbulb");
         bulb.SetTransitiveResponse("what", () => {
             return "A dimly pulsing lightbulb. Keeping with the theme, it looks like it actually has a filament inside.";
