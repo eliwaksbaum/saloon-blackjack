@@ -24,15 +24,19 @@ public class Goon : GameObject
     {
         if (isTalking)
         {
+            Die();
             return "You see a moment of panic on " + name + "'s face but it doesn't last long. They join their coworkers on the floor.";
+        }
+        else if (isDead)
+        {
+            return "You shoot " + name + "'s dead body. Doesn't seem to change much.";
         }
         else
         {
             double roll = rand.NextDouble();
             if (roll > odds)
             {
-                isDead = true;
-                Delete();
+                Die();
                 return "You take careful aim and " + name + " hits the floor.";
             }
             else
@@ -40,6 +44,13 @@ public class Goon : GameObject
                 return "Crap. " + name + " got out of the way.";
             }
         }
+    }
+
+    void Die()
+    {
+        isDead = true;
+        SetTransitiveResponse("what", () => {return name + "'s dead body lies on the floor.";});
+        SetTransitiveResponse("look", null);
     }
 
     public string Talk()
