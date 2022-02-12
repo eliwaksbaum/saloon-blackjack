@@ -266,29 +266,33 @@ public class Backroom : Room
         return "You're all out of ammo.";
     }
 
-    string LightScram(string exit)
+    string FindSurvivor()
     {
-        string survivor;
         if (kwim.IsTalking)
         {
-            survivor = "Kwim";
+            return "Kwim";
         }
         else if (letta.IsTalking)
         {
-            survivor = "Letta";
+            return "Letta";
         }
         else if (skinner.IsTalking)
         {
-            survivor = "Skinner";
+            return "Skinner";
         }
         else if (kwim.IsDead && letta.IsDead && skinner.IsDead)
         {
-            survivor = "none";
+            return "none";
         }
         else
         {
-            survivor = "notsafe";
+            return "notsafe";
         }
+        }
+
+    string LightScram(string exit)
+    {
+        string survivor = FindSurvivor();
 
         if (exit == "back alley")
         {
@@ -313,7 +317,7 @@ public class Backroom : Room
                 case "none":
                     return "Probably best to leave out the back.";
                 default:
-                    return "You don't want to turn your back to " + survivor + ". Probably best to leave out the back.";
+                    return "You don't know what " + survivor + " could signal back in the saloon. Probably best to leave out the back.";
             }
         }
         else
@@ -324,6 +328,8 @@ public class Backroom : Room
 
     string DarkScram(string exit)
     {
+        string survivor = FindSurvivor();
+
         if (exit == "saloon")
         {
             player.AddWaypoint("endB");
@@ -331,21 +337,19 @@ public class Backroom : Room
         }
         else if (exit == "back alley")
         {
+            if (survivor == "none")
+            {
+                player.AddWaypoint("endA");
+                return "You find the door to the alley in the dark and get the hell out of that backroom.";
+            }
+            else
+            {
             return "You don't think you could sneak all the way to the alley door.";
+            }
         }
         else
         {
             return "There's no room named " + exit + " here to enter.";
         }
     }
-
-    //TODO:
-
-        //Shooting the vent freaks kwim out, nab 'em. I guess that means we need a way to change a goon's odds
-
-        //Shooting other objects does stuff?
-
-        //IDK if it goes in this class, but if you run out of bullets you die. Or maybe if you shoot the wrong thing it blows up?
-            //then should you start over from scratch or just the fight?
-                //just the fight is actually so doable. just reset ammo and make a new backroom object
 }
