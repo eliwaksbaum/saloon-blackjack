@@ -53,9 +53,15 @@ public class Backroom : Room
 
         GameObject cabinet = new GameObject("filing cabinet");
             cabinet.SetTransitiveResponse("what", () => {
-                return "I guess the Brotherhood likes to keep their files in order.";
+                return "Looks like the Brotherhood likes to keep their files in order.";
             });
         AddObject(cabinet);
+
+        GameObject couch = new GameObject("couch");
+            couch.SetTransitiveResponse("what", () => {
+                return "An old brown couch with a few stains. You could have sworn you'd seen one just like it before.";
+            });
+        AddObject(couch);
 
         GameObject bulb = new GameObject("lightbulb");
             bulb.SetTransitiveResponse("what", () => {
