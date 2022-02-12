@@ -16,7 +16,7 @@ public class Goon : GameObject
     public Goon(string name, float odds) : base(name)
     {
         this.name = Parser.CapitalizeFirst(name);
-        this.odds = odds;
+        UpdateOdds(odds);
         SetTransitiveResponse("shoot", Shoot);
     }
 
@@ -56,6 +56,18 @@ public class Goon : GameObject
                 return "I swear! I swear! I'm a nobody ok, they've got me out here working this small-time outpost in the middle of nowhere. I don't know where they took him!";
             default:
                 return "I don't know! I swear!";
+        }
+    }
+
+    public void UpdateOdds(float newodds)
+    {
+        if (0 <= newodds && newodds < 1)
+        {
+            odds = newodds;
+        }
+        else
+        {
+            throw new Exception("A Goon's odds must be within [0, 1)");
         }
     }
 }
