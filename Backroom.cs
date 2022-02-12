@@ -77,20 +77,30 @@ public class Backroom : Room
             vent.SetCondition("shot1", false);
             vent.SetCondition("shot2", false);
             vent.SetTransitiveResponse("what", () => {
-                return "A big vent running across the ceiling, carrying who knows what.";
+                string what = "A big vent running across the ceiling";
+                what += vent.GetCondition("shot1") ? " leaking a white gas from where you shot it."
+                    : ", carrying who knows what.";
+                return what;
             });
             vent.SetTransitiveResponse("shoot", () => {
                 if (!vent.GetCondition("shot1"))
                 {
-                    vent.SetCondition("shot", true);
+                    vent.SetCondition("shot1", true);
+                    if (!kwim.IsDead)
+                    {
                     kwim.SetCondition("spooked", true);
                     kwim.UpdateOdds(0f);
                     return "You shoot the vent and some sort of gas starts gushing out of the hole. Whatever was in there, it's"
                     + " freaking Kwim out.";
                 }
+                    return "You shoot the vent and some sort of gas starts gushing out of the hole.";
+                }
                 else if (!vent.GetCondition("shot2"))
                 {
-                    return "You shoot another hole in the vent and the gas starts leaking faster";
+                    vent.SetCondition("shot2", true);
+                    string message = "You shoot another hole in the vent. The gas starts leaking faster";
+                    message += kwim.IsDead ? "." : " and Kwim grows even more agitated.";
+                    return message;
                 }
                 else
                 {
@@ -103,14 +113,25 @@ public class Backroom : Room
 
     string kLook()
     {
-        return kwim.GetCondition("spooked") ? "KWIM is freaking out below the VENT, trying to swat the gas away somehow."
-            : "KWIM is standing in the left corner behind a FILING CABINET, just below a big VENT.";
+        if (kwim.GetCondition("spooked"))
+        {
+            return kwim.IsTalking ? "KWIM has made their way out of the gass and behind the couch."
+                : "KWIM is freaking out below the VENT, trying to swat the gas away somehow.";
+        }
+        else
+        {
+            return "KWIM is standing in the left corner behind a FILING CABINET, just below a big VENT.";
+        }
     }
     string kTalk()
     {
-        if (!(skinner.IsDead && letta.IsDead))
+        if (kwim.GetCondition("spooked"))
         {
-            return "KWIM gives you a gesture that makes you think they're not interested in talking.";
+            return "It doesn't look like Kwim heard you, too busy flailing under the gas.";
+        }
+        else if (!(skinner.IsDead && letta.IsDead))
+        {
+            return "Kwim gives you a gesture that makes you think they're not interested in talking.";
         }
         else
         {
