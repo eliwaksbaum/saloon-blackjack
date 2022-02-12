@@ -216,8 +216,9 @@ public class Backroom : Room
     {
         int ammo = player.IncrementCounter("ammo", -1);
         string count = "";
-        if (ammo == 0)
+        if (ammo == 0 && (!(kwim.IsDead && letta.IsDead && skinner.IsDead)))
         {
+            player.AddWaypoint("failDeath");
             count = "Fuck.";
         }
         else
@@ -230,6 +231,8 @@ public class Backroom : Room
 
     string LightShoot(string target)
     {
+        if (player.GetCounter("ammo") > 0)
+        {
         if (!player.InRoom(target))
         {
             return "There's no " + target + " here to shoot.";
@@ -244,17 +247,23 @@ public class Backroom : Room
             }
             else
             {
-                UseAmmo();
                 string response = shoot();
+                    UseAmmo();
                 return response == null ? "The bullet ricochets off the " + target + "." : response;
             }
         }
     }
+        return "You're all out of ammo.";
+    }
 
     string DarkShoot(string target)
     {
+        if (player.GetCounter("ammo") > 0)
+        {
         UseAmmo();
         return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
+    }
+        return "You're all out of ammo.";
     }
 
     string LightScram(string exit)
