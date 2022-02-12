@@ -21,6 +21,7 @@ public class Backroom : Room
         World.GetWorld.AddTransitiveCommand("shoot", LightShoot, fightState, "Shoot what?");
         World.GetWorld.AddTransitiveCommand("shoot", DarkShoot, darkState, "Shoot what?");
         World.GetWorld.AddIntransitiveCommand("look", () => {return "You can't see anything with the light out.";}, darkState);
+        World.GetWorld.AddTransitiveCommand("enter", LightScram, fightState, "Enter where?");
 
         GameObject can = new GameObject("can");
         can.SetTransitiveResponse("shoot", () => {return "clang";});
@@ -151,6 +152,67 @@ public class Backroom : Room
         UseAmmo();
         return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
     }
+
+    string LightScram(string exit)
+    {
+        string survivor;
+        if (kwim.IsTalking)
+        {
+            survivor = "Kwim";
+        }
+        else if (letta.IsTalking)
+        {
+            survivor = "Letta";
+        }
+        else if (skinner.IsTalking)
+        {
+            survivor = "Skinner";
+        }
+        else if (kwim.IsDead && letta.IsDead && skinner.IsDead)
+        {
+            survivor = "none";
+        }
+        else
+        {
+            survivor = "notsafe";
+        }
+
+        if (exit == "back alley")
+        {
+            switch (survivor)
+            {
+                case "notsafe":
+                    return "You don't think you could make it to the alley door safely.";
+                case "none":
+                    player.AddWaypoint("stage5A");
+                    return "You leave the bodies behind and dash out to the alley.";
+                default:
+                    player.AddWaypoint("stage5A");
+                    return "You leave " + survivor + " behind and dash out to the alley.";
+            }
+        }
+        else if (exit == "saloon")
+        {
+            switch (survivor)
+            {
+                case "notsafe":
+                    return "You don't think you could make it to the saloon door safely.";
+                case "none":
+                    return "Probably best to leave out the back.";
+                default:
+                    return "You don't want to turn your back to " + survivor + ". Probably best to leave out the back.";
+            }
+        }
+        else
+        {
+            return "There's no room named " + exit + " here to enter.";
+        }
+    }
+
+    // string DarkScram(string exit)
+    // {
+
+    // }
 
     //TODO:
         //Scram: if lightsout, you can runaway back into the saloon. if you've subdued everyone, you can leave into the alley

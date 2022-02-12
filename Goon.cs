@@ -8,6 +8,7 @@ public class Goon : GameObject
     float odds;
 
     bool isTalking;
+    public bool IsTalking => isTalking;
     int talkCount;
     bool isDead = false;
     public bool IsDead => isDead;
