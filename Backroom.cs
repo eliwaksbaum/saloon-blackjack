@@ -7,9 +7,9 @@ public class Backroom : Room
     State darkState = new State();
     Player player;
 
-    Goon kwim = new Goon("kwim", 0.5f);
-    Goon letta = new Goon("letta", 0.5f);
-    Goon skinner = new Goon("skinner", 0.7f);
+    Goon kwim = new Goon("kwim", 0.6f);
+    Goon letta = new Goon("letta", 0.6f);
+    Goon skinner = new Goon("skinner", 0.8f);
 
     public Backroom(Player player) : base("backroom")
     {
@@ -23,6 +23,7 @@ public class Backroom : Room
         World.GetWorld.AddIntransitiveCommand("look", () => {return "You can't see anything with the light out, besides the sliver of light coming from door to the SALOON.";}, darkState);
         World.GetWorld.AddTransitiveCommand("enter", LightScram, fightState, "Enter where?");
         World.GetWorld.AddTransitiveCommand("enter", DarkScram, darkState, "Enter where?");
+        World.GetWorld.AddIntransitiveCommand("help", Help, fightState.Compose(darkState));
 
         GameObject can = new GameObject("can");
         can.SetTransitiveResponse("shoot", () => {return "clang";});
@@ -89,11 +90,11 @@ public class Backroom : Room
                     vent.SetCondition("shot1", true);
                     if (!kwim.IsDead)
                     {
-                    kwim.SetCondition("spooked", true);
-                    kwim.UpdateOdds(0f);
-                    return "You shoot the vent and some sort of gas starts gushing out of the hole. Whatever was in there, it's"
-                    + " freaking Kwim out.";
-                }
+                        kwim.SetCondition("spooked", true);
+                        kwim.UpdateOdds(0f);
+                        return "You shoot the vent and some sort of gas starts gushing out of the hole. Whatever was in there, it's"
+                        + " freaking Kwim out.";
+                    }
                     return "You shoot the vent and some sort of gas starts gushing out of the hole.";
                 }
                 else if (!vent.GetCondition("shot2"))
@@ -142,6 +143,18 @@ public class Backroom : Room
                 }
             });
         AddObject(fridge);
+    }
+
+    string Help()
+    {
+        return "inv - view your inventory\n" +
+        "look - have a look around\n" +
+        "examine - take a closer look at something or someone\n" +
+        "enter - enter a room\n" +
+        "talk (to) - talk to someone\n" +
+        "shoot - shoot someone or something\n" +
+        "help - see available actions\n" +
+        "quit - quit the game";
     }
 
     string kLook()
@@ -226,33 +239,33 @@ public class Backroom : Room
             count = ammo == 1 ? " shot left." : " shots left.";
             count = ammo + count;
         }
-        Parser.GetParser.AddAfterword(count);
+        Parser.GetParser.AddAfterword(count);        
     }
 
     string LightShoot(string target)
     {
         if (player.GetCounter("ammo") > 0)
         {
-        if (!player.InRoom(target))
-        {
-            return "There's no " + target + " here to shoot.";
-        }
-        else
-        {
-            GameObject targetObj = player.GetFromRoom(target);
-            Func<string> shoot = targetObj.GetTransitiveResponse("shoot");
-            if (shoot == null)
+            if (!player.InRoom(target))
             {
-                return "You can't shoot the " + target + ".";
+                return "There's no " + target + " here to shoot.";
             }
             else
             {
-                string response = shoot();
+                GameObject targetObj = player.GetFromRoom(target);
+                Func<string> shoot = targetObj.GetTransitiveResponse("shoot");
+                if (shoot == null)
+                {
+                    return "You can't shoot the " + target + ".";
+                }
+                else
+                {
+                    string response = shoot();
                     UseAmmo();
-                return response == null ? "The bullet ricochets off the " + target + "." : response;
+                    return response == null ? "The bullet ricochets off the " + target + "." : response;
+                }
             }
         }
-    }
         return "You're all out of ammo.";
     }
 
@@ -260,9 +273,9 @@ public class Backroom : Room
     {
         if (player.GetCounter("ammo") > 0)
         {
-        UseAmmo();
-        return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
-    }
+            UseAmmo();
+            return "You try to aim for " + target + ", but it's pitch black in here. You don't think you hit anything.";
+        }
         return "You're all out of ammo.";
     }
 
@@ -288,7 +301,7 @@ public class Backroom : Room
         {
             return "notsafe";
         }
-        }
+    }
 
     string LightScram(string exit)
     {
@@ -344,7 +357,7 @@ public class Backroom : Room
             }
             else
             {
-            return "You don't think you could sneak all the way to the alley door.";
+                return "You don't think you could sneak all the way to the alley door.";
             }
         }
         else

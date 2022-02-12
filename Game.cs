@@ -69,11 +69,6 @@ public class Game
             instructions += "\nshow .. to - show an item in your inventory to someone else";
         }
 
-        if (player.HasWaypoint("stage5"))
-        {
-            instructions += "\nshoot - shoot something in the room";
-        }
-
         instructions += "\nhelp - see available actions\nquit - quit the game";
 
         if (player.HasWaypoint("stage3") && !player.HasWaypoint("stage4"))
