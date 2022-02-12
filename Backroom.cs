@@ -7,9 +7,9 @@ public class Backroom : Room
     State darkState = new State();
     Player player;
 
-    Goon kwim = new Goon("kwim", 0.0f);
+    Goon kwim = new Goon("kwim", 0.5f);
     Goon letta = new Goon("letta", 0.5f);
-    Goon skinner = new Goon("skinner", 0.0f);
+    Goon skinner = new Goon("skinner", 0.7f);
 
     public Backroom(Player player) : base("backroom")
     {
@@ -20,8 +20,9 @@ public class Backroom : Room
         player.State = fightState;
         World.GetWorld.AddTransitiveCommand("shoot", LightShoot, fightState, "Shoot what?");
         World.GetWorld.AddTransitiveCommand("shoot", DarkShoot, darkState, "Shoot what?");
-        World.GetWorld.AddIntransitiveCommand("look", () => {return "You can't see anything with the light out.";}, darkState);
+        World.GetWorld.AddIntransitiveCommand("look", () => {return "You can't see anything with the light out, besides the sliver of light coming from door to the SALOON.";}, darkState);
         World.GetWorld.AddTransitiveCommand("enter", LightScram, fightState, "Enter where?");
+        World.GetWorld.AddTransitiveCommand("enter", DarkScram, darkState, "Enter where?");
 
         GameObject can = new GameObject("can");
         can.SetTransitiveResponse("shoot", () => {return "clang";});
@@ -184,10 +185,10 @@ public class Backroom : Room
                 case "notsafe":
                     return "You don't think you could make it to the alley door safely.";
                 case "none":
-                    player.AddWaypoint("stage5A");
+                    player.AddWaypoint("endA");
                     return "You leave the bodies behind and dash out to the alley.";
                 default:
-                    player.AddWaypoint("stage5A");
+                    player.AddWaypoint("endA");
                     return "You leave " + survivor + " behind and dash out to the alley.";
             }
         }
@@ -209,15 +210,24 @@ public class Backroom : Room
         }
     }
 
-    // string DarkScram(string exit)
-    // {
-
-    // }
+    string DarkScram(string exit)
+    {
+        if (exit == "saloon")
+        {
+            player.AddWaypoint("endB");
+            return "You slip back into the saloon as quietly as possible and then book it to the door.";
+        }
+        else if (exit == "back alley")
+        {
+            return "You don't think you could sneak all the way to the alley door.";
+        }
+        else
+        {
+            return "There's no room named " + exit + " here to enter.";
+        }
+    }
 
     //TODO:
-        //Scram: if lightsout, you can runaway back into the saloon. if you've subdued everyone, you can leave into the alley
-            // this is gonna be a new "enter" command in the fightstate. we're not using CMD.GO since there are no exits here
-            // and we don't actually enter the room, the game just ends
 
         //Shooting the vent freaks kwim out, nab 'em. I guess that means we need a way to change a goon's odds
 
