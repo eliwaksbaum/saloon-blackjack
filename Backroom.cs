@@ -33,6 +33,7 @@ public class Backroom : Room
         });
         kwim.SetTransitiveResponse("look", kLook);
         kwim.SetTransitiveResponse("talk", kTalk);
+        kwim.SetCondition("spooked", false);
         AddObject(kwim);
         
         
@@ -57,19 +58,47 @@ public class Backroom : Room
         AddObject(cabinet);
 
         GameObject bulb = new GameObject("lightbulb");
-        bulb.SetTransitiveResponse("what", () => {
-            return "A dimly pulsing lightbulb. Keeping with the theme, it looks like it actually has a filament inside.";
-        });
-        bulb.SetTransitiveResponse("shoot", () => {
-            player.State = darkState;
-            return "The bulb shatters and the room goes pitch black.";
-        });
+            bulb.SetTransitiveResponse("what", () => {
+                return "A dimly pulsing lightbulb. Keeping with the theme, it looks like it actually has a filament inside.";
+            });
+            bulb.SetTransitiveResponse("shoot", () => {
+                player.State = darkState;
+                return "The bulb shatters and the room goes pitch black.";
+            });
         AddObject(bulb);
+
+        GameObject vent = new GameObject("vent");
+            vent.SetCondition("shot1", false);
+            vent.SetCondition("shot2", false);
+            vent.SetTransitiveResponse("what", () => {
+                return "A big vent running across the ceiling, carrying who knows what.";
+            });
+            vent.SetTransitiveResponse("shoot", () => {
+                if (!vent.GetCondition("shot1"))
+                {
+                    vent.SetCondition("shot", true);
+                    kwim.SetCondition("spooked", true);
+                    kwim.UpdateOdds(0f);
+                    return "You shoot the vent and some sort of gas starts gushing out of the hole. Whatever was in there, it's"
+                    + " freaking Kwim out.";
+                }
+                else if (!vent.GetCondition("shot2"))
+                {
+                    return "You shoot another hole in the vent and the gas starts leaking faster";
+                }
+                else
+                {
+                    player.AddWaypoint("gasDeath");
+                    return "You shoot the vent a third time and the whole thing collapses, filling the room with the gas.";
+                }
+            });
+        AddObject(vent);
     }
 
     string kLook()
     {
-        return "KWIM is standing in the left corner behind a FILING CABINET, just below a big VENT.";
+        return kwim.GetCondition("spooked") ? "KWIM is freaking out below the VENT, trying to swat the gas away somehow."
+            : "KWIM is standing in the left corner behind a FILING CABINET, just below a big VENT.";
     }
     string kTalk()
     {
