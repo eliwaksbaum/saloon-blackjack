@@ -96,8 +96,15 @@ public class Saloon : Room
 
     string PlayBlackJack()
     {
-        BlackJack game = new BlackJack(player);
-        return game.Start();
+        if (player.GetCounter("money") == 0)
+        {
+            return "You gotta have money to play BlackJack.";
+        }
+        else
+        {
+            BlackJack game = new BlackJack(player);
+            return game.Start();
+        }
     }
 
     string Open(string target)

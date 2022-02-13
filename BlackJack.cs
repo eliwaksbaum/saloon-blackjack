@@ -33,7 +33,7 @@ public class BlackJack
     {
         hit = World.GetWorld.AddIntransitiveCommand("hit", null, hitOrStayState);
         stay = World.GetWorld.AddIntransitiveCommand("stay", null, hitOrStayState);
-        play = World.GetWorld.AddIntransitiveCommand("play", null, inOrOutState);
+        play = World.GetWorld.AddIntransitiveCommand("play", null, inOrOutState, new string[]{"play again"});
         leave = World.GetWorld.AddIntransitiveCommand("leave", null, inOrOutState);
 
         World.GetWorld.AddIntransitiveCommand("help", HitHelp, hitOrStayState);
@@ -96,8 +96,7 @@ public class BlackJack
             string ending;
             if (playerScore > 21)
             {
-                player.State = inOrOutState;
-                ending = "You're over 21!\n" + PayOut(false) + "\nPlay again or leave?";
+                ending = "You're over 21!\n" + PayOut(false) + InOrOut();
             }
             else
             {
@@ -110,10 +109,9 @@ public class BlackJack
     string Stay()
     {
         string dealerPlay = DealersPlay();
-        player.State = inOrOutState;
         if (dealerScore > 21)
         {
-            return dealerPlay + "The dealer's over 21!\n" + PayOut(true) + "\nPlay again or leave?";
+            return dealerPlay + "The dealer's over 21!\n" + PayOut(true) + InOrOut();
         }
         else
         {
@@ -127,7 +125,7 @@ public class BlackJack
                 result = PayOut(playerScore > dealerScore);
             }
             return dealerPlay + "The dealer has " + dealerScore + " and you have " + playerScore +
-                ".\n" + result + "\nPlay again or leave?";
+                ".\n" + result + InOrOut();
         }
     }
 
@@ -169,16 +167,8 @@ public class BlackJack
 
     public string Start()
     {
-        if (player.GetCounter("money") == 0)
-        {
-            player.State = saloonState;
-            return "You gotta have money to play BlackJack.";
-        }
-        else
-        {
-            Parser.GetParser.GoRaw(TakeBet);
-            return "How much would you like to bet?";
-        }
+        Parser.GetParser.GoRaw(TakeBet);
+        return "How much would you like to bet?";
     }
 
     string FirstDeal()
@@ -206,8 +196,7 @@ public class BlackJack
         message += Announce();
         if (playerScore == 21)
         {
-            player.State = inOrOutState;
-            message += "\nBlackjack! " + PayOut(true) + "\nPlay again or leave?";
+            message += "\nBlackjack! " + PayOut(true) + InOrOut();
         }
         else
         {
@@ -234,6 +223,20 @@ public class BlackJack
         else
         {
             return "Please type a number greater than 0 for your bet.";
+        }
+    }
+
+    string InOrOut()
+    {
+        if (player.GetCounter("money") == 0)
+        {
+            player.State = saloonState;
+            return "\nDamn, you lost all the cash you had. You get up from the table.";
+        }
+        else
+        {
+            player.State = inOrOutState;
+            return "\nPlay again or leave?";
         }
     }
 
