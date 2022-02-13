@@ -7,7 +7,7 @@ public class Backroom : Room
     State darkState = new State();
     Player player;
 
-    Goon kwim = new Goon("kwim", 0.6f);
+    Goon kwin = new Goon("kwin", 0.6f);
     Goon letta = new Goon("letta", 0.6f);
     Goon skinner = new Goon("skinner", 0.8f);
 
@@ -29,17 +29,17 @@ public class Backroom : Room
         can.SetTransitiveResponse("shoot", () => {return "clang";});
         AddObject(can);
 
-        kwim.SetTransitiveResponse("what", () => {
+        kwin.SetTransitiveResponse("what", () => {
             return "A skinny Brotherhood goon. You think they might have shot you before, or maybe that was Letta.";
         });
-        kwim.SetTransitiveResponse("look", kLook);
-        kwim.SetTransitiveResponse("talk", kTalk);
-        kwim.SetCondition("spooked", false);
-        AddObject(kwim);
+        kwin.SetTransitiveResponse("look", kLook);
+        kwin.SetTransitiveResponse("talk", kTalk);
+        kwin.SetCondition("spooked", false);
+        AddObject(kwin);
         
         
         letta.SetTransitiveResponse("what", () => {
-            return "A fat Brotherhood goon. You think they might have shot you before, or maybe that was Kwim.";
+            return "A fat Brotherhood goon. You think they might have shot you before, or maybe that was Kwin.";
         });
         letta.SetTransitiveResponse("look", lLook);
         letta.SetTransitiveResponse("talk", lTalk);
@@ -88,12 +88,12 @@ public class Backroom : Room
                 if (!vent.GetCondition("shot1"))
                 {
                     vent.SetCondition("shot1", true);
-                    if (!kwim.IsDead)
+                    if (!kwin.IsDead)
                     {
-                        kwim.SetCondition("spooked", true);
-                        kwim.UpdateOdds(0f);
+                        kwin.SetCondition("spooked", true);
+                        kwin.UpdateOdds(0f);
                         return "You shoot the vent and some sort of gas starts gushing out of the hole. Whatever was in there, it's"
-                        + " freaking Kwim out.";
+                        + " freaking Kwin out.";
                     }
                     return "You shoot the vent and some sort of gas starts gushing out of the hole.";
                 }
@@ -101,7 +101,7 @@ public class Backroom : Room
                 {
                     vent.SetCondition("shot2", true);
                     string message = "You shoot another hole in the vent. The gas starts leaking faster";
-                    message += kwim.IsDead ? "." : " and Kwim grows even more agitated.";
+                    message += kwin.IsDead ? "." : " and Kwin grows even more agitated.";
                     return message;
                 }
                 else
@@ -159,29 +159,29 @@ public class Backroom : Room
 
     string kLook()
     {
-        if (kwim.GetCondition("spooked"))
+        if (kwin.GetCondition("spooked"))
         {
-            return kwim.IsTalking ? "KWIM has made their way out of the gass and behind the couch."
-                : "KWIM is freaking out below the VENT, trying to swat the gas away somehow.";
+            return kwin.IsTalking ? "KWIN has made their way out of the gass and behind the couch."
+                : "KWIN is freaking out below the VENT, trying to swat the gas away somehow.";
         }
         else
         {
-            return "KWIM is standing in the left corner behind a FILING CABINET, just below a big VENT.";
+            return "KWIN is standing in the left corner behind a FILING CABINET, just below a big VENT.";
         }
     }
     string kTalk()
     {
-        if (kwim.GetCondition("spooked"))
+        if (kwin.GetCondition("spooked"))
         {
-            return "It doesn't look like Kwim heard you, too busy flailing under the gas.";
+            return "It doesn't look like Kwin heard you, too busy flailing under the gas.";
         }
         else if (!(skinner.IsDead && letta.IsDead))
         {
-            return "Kwim gives you a gesture that makes you think they're not interested in talking.";
+            return "Kwin gives you a gesture that makes you think they're not interested in talking.";
         }
         else
         {
-            return kwim.Talk();
+            return kwin.Talk();
         }
     }
 
@@ -199,7 +199,7 @@ public class Backroom : Room
     }
     string lTalk()
     {
-        if (!(skinner.IsDead && kwim.IsDead))
+        if (!(skinner.IsDead && kwin.IsDead))
         {
             return "Letta gives you a gesture that makes you certain they're not interested in talking.";
         }
@@ -215,7 +215,7 @@ public class Backroom : Room
     }
     string sTalk()
     {
-        if (!(kwim.IsDead && letta.IsDead))
+        if (!(kwin.IsDead && letta.IsDead))
         {
             return "'You're not talking your way out of this dickhead. I'm taking that ring back from your cold dead hands.'";
         }
@@ -229,7 +229,7 @@ public class Backroom : Room
     {
         int ammo = player.IncrementCounter("ammo", -1);
         string count = "";
-        if (ammo == 0 && (!(kwim.IsDead && letta.IsDead && skinner.IsDead)))
+        if (ammo == 0 && (!(kwin.IsDead && letta.IsDead && skinner.IsDead)))
         {
             player.AddWaypoint("failDeath");
             count = "Fuck.";
@@ -281,9 +281,9 @@ public class Backroom : Room
 
     string FindSurvivor()
     {
-        if (kwim.IsTalking)
+        if (kwin.IsTalking)
         {
-            return "Kwim";
+            return "Kwin";
         }
         else if (letta.IsTalking)
         {
@@ -293,7 +293,7 @@ public class Backroom : Room
         {
             return "Skinner";
         }
-        else if (kwim.IsDead && letta.IsDead && skinner.IsDead)
+        else if (kwin.IsDead && letta.IsDead && skinner.IsDead)
         {
             return "none";
         }
