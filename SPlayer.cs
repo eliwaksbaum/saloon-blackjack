@@ -82,8 +82,46 @@ public class SPlayer : Player
             Parser.GetParser.AddAfterword(end);
         }
 
-        //gasDeath
-        //failDeath
-        //redo
+        if (newpoint == "failDeath")
+        {
+            string whoops = "0 shots left. Fuck.\n\n"
+            + "Seems like you weren't the only one counting. You turn away, but you hear their feet walking towards you."
+            + " Slow. The sound of a gun being cocked fills your ears. Sorry, Pitr."
+            + "\n\nTry again?";
+            Parser.GetParser.AddAfterword(whoops);
+            Parser.GetParser.GoRaw(Redo);
+        }
+
+        if (newpoint == "gasDeath")
+        {
+            string choke = "The gas gets so thick you can't really see. Or breathe. Your skin feels hot and cold at the same"
+            + " time. You try to run back into the saloon behind you but you can't get your legs to move right. Hard to think now,"
+            + " too. Sorry Pitr."
+            + "\n\nTry again?";
+            Parser.GetParser.AddAfterword(choke);
+            Parser.GetParser.GoRaw(Redo);
+        }
+        
+        string Redo(string input)
+        {
+            input = input.ToLower();
+            if (input == "y" || input == "yes")
+            {
+                current_room.Delete();
+                current_room = new Backroom(this);
+                IncrementCounter("ammo", 6);
+                Parser.GetParser.GoStandard();
+                return Backroom.on_enter;
+            }
+            else if (input == "n" || input == "no")
+            {
+                World.GetWorld.done = true;
+                return "So long, spaceman.";
+            }
+            else
+            {
+                return "Try again? (y/n)";
+            }
+        }
     }
 }

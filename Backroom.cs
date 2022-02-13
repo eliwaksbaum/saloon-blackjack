@@ -5,13 +5,17 @@ public class Backroom : Room
 {
     State fightState = new State();
     State darkState = new State();
-    Player player;
+    SPlayer player;
 
     Goon kwin = new Goon("kwin", 0.6f);
     Goon letta = new Goon("letta", 0.6f);
     Goon skinner = new Goon("skinner", 0.8f);
 
-    public Backroom(Player player) : base("backroom")
+    public static string on_enter = "Bingo. You open the door to find three Brotherhood goons sitting around a table. Familiar faces"
+    + " as it turns out. They see you pull a gun from the holster on your left hip and scatter as you open fire. As gunshots turn to"
+    + " clicks you flip the table over and crouch down behind it. Then you draw the gun from the holster on your right hip. Show time.";
+
+    public Backroom(SPlayer player) : base("backroom")
     {
         description = "The room behind the door is pretty sparse. A single LIGHTBULB hangs from the ceiling, making it feel like a basement."
             + " The door back to the SALOON stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
@@ -232,14 +236,13 @@ public class Backroom : Room
         if (ammo == 0 && (!(kwin.IsDead && letta.IsDead && skinner.IsDead)))
         {
             player.AddWaypoint("failDeath");
-            count = "Fuck.";
         }
         else
         {
             count = ammo == 1 ? " shot left." : " shots left.";
             count = ammo + count;
-        }
-        Parser.GetParser.AddAfterword(count);        
+            Parser.GetParser.AddAfterword(count);
+        }        
     }
 
     string LightShoot(string target)
@@ -260,8 +263,8 @@ public class Backroom : Room
                 }
                 else
                 {
-                    string response = shoot();
                     UseAmmo();
+                    string response = shoot();
                     return response == null ? "The bullet ricochets off the " + target + "." : response;
                 }
             }
