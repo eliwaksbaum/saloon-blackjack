@@ -12,7 +12,7 @@ public class Saloon : Room
 
         description = "A smoky, seedy looking place that doesn't seem to know what year it is. There's even a JUKEBOX." +
             " The BARTENDER stands in front of an empty COUNTER. The DEALER is running a game of blackjack for a few" +
-            " people around a table in the corner. All the way in the back, almost hidden in the dark, there's a DOOR with a sign: 'Staff Only'.";
+            " people around a TABLE in the corner. All the way in the back, almost hidden in the dark, there's a DOOR with a sign: 'Staff Only'.";
         
         OnEnter = () => {player.State = saloonState;};
         OnExit = () => {Delete();};
@@ -57,6 +57,41 @@ public class Saloon : Room
 
         //Door
         AddObject(new Door(player));
+
+        //Players
+        GameObject table = new GameObject("table");
+            table.SetTransitiveResponse("what", () => {
+                return "A small card table. Around it sit the DEALER, a MAN, a WOMAN, and a PERSON IN A BIG GREEN HAT.";
+            });
+        AddObject(table);
+
+        GameObject man = new GameObject("man");
+            man.SetTransitiveResponse("what", () => {
+                return "A man with short hair and a long nose. He doesn't seem to be winning much.";
+            });
+            man.SetTransitiveResponse("talk", () => {
+                return "'Hey shoo, I'm losing money here.'";
+            });
+        AddObject(man);
+
+        GameObject woman = new GameObject("woman");
+            woman.SetTransitiveResponse("what", () => {
+                return "She's assembled quite a collection of empty glasses in front of her. She's holding a leather briefcase"
+                    + " and keeps glancing at the door.";
+            });
+            woman.SetTransitiveResponse("talk", () => {
+                return "'Mind your own business, would you.'";
+            });
+        AddObject(woman);
+
+        GameObject person = new GameObject("person in a big green hat");
+            person.SetTransitiveResponse("what", () => {
+                return "They're wearing a very large, very bright green hat, sunglasses, and a trenchcoat. Couldn't say much else about them.";
+            });
+            person.SetTransitiveResponse("talk", () => {
+                return "You try to ask them something but they just smile back at you.";
+            });
+        AddObject(person);
     }
 
     string PlayBlackJack()

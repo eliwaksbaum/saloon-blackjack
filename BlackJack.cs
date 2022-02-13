@@ -39,7 +39,9 @@ public class BlackJack
         World.GetWorld.AddIntransitiveCommand("help", HitHelp, hitOrStayState);
         World.GetWorld.AddIntransitiveCommand("help", PlayHelp, inOrOutState);
         World.GetWorld.AddTransitiveCommand("talk", CMD.Talk(player), blackjackState, "Talk to whom?", preps: new string[]{"to"});
-        //look
+        World.GetWorld.AddIntransitiveCommand("look", () => {
+            return "You're sitting at a table with the DEALER, a MAN, a WOMAN, and a PERSON IN A BIG GREEN HAT.";
+        }, blackjackState);
     }
 
     static string HitHelp()
