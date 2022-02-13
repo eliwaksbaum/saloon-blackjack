@@ -62,5 +62,28 @@ public class SPlayer : Player
                 
             Parser.GetParser.AddAfterword(stage4);
         }
+
+        if (newpoint == "endA" || newpoint == "endB")
+        {
+            string endA = "You skid on the trash in the back alley and cut quick around to the front of the saloon.";
+            string endB = "You burst through the front doors of the saloon.";
+
+            string end = " The thug, still on guard, has a look like he knows something's not right about you but you hop into the cab before"
+            + " he can do anything about it.\n"
+            + "'So you made it, huh. Guess I'm getting my fare afterall.'\n"
+            + "You tell the cabby he'll have a lot more to worry about than his fare if he doesn't step on it right fucking now, and he does.\n\n"
+            + "The red neon sign fades out of view. What a dump. What a bust. You'll find him, though. You hear there's another one of these"
+            + " outposts on Callisto. And a few on Mars. You'll find him.\n"
+            + "The cab smells like shit.\nYou miss your scooter.\n\n"
+            + "'Til next time, spaceman.";
+            end = newpoint == "endA" ? endA + end : endB + end;
+
+            World.GetWorld.done = true;
+            Parser.GetParser.AddAfterword(end);
+        }
+
+        //gasDeath
+        //failDeath
+        //redo
     }
 }

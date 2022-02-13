@@ -15,7 +15,7 @@ public class Game
         world.AddIntransitiveCommand("help", Help, State.Default);
         world.AddIntransitiveCommand("look", CMD.Look(player), State.Default, new string[]{"look around"});
         world.AddIntransitiveCommand("inv", Inv, State.All);
-        world.AddIntransitiveCommand("quit", () => {world.done = true; return "See you, cowboy.";}, State.All);
+        world.AddIntransitiveCommand("quit", () => {world.done = true; return "So long, spaceman.";}, State.All);
 
         world.AddTransitiveCommand("examine", CMD.What(player), State.Default, "Examine what?");
         world.AddTransitiveCommand("take", CMD.Take(player), State.Default, "Take what?");
