@@ -17,12 +17,12 @@ public static class Bar
             SetTransitiveResponse("drink", DrinkResponse(player));
         }
 
-        public string What()
+        string What()
         {
             return description;
         }
 
-        public Func<string> DrinkResponse(Player player)
+        Func<string> DrinkResponse(Player player)
         {
             if (ID == "bottle of whiskey")
             {
@@ -107,6 +107,9 @@ public static class Bar
                 GameObject poison = new GameObject("peanut " + name);
                 poison.SetTransitiveResponse("what", () => {
                     return "A " + name + " with trace amounts of peanut in it.";
+                });
+                poison.SetTransitiveResponse("drink", () => {
+                    return "Huh. Can't taste the peanut at all.";
                 });
                 player.AddToInventory(poison);
 

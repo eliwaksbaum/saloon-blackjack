@@ -48,6 +48,7 @@ public class Goon : GameObject
 
     void Die()
     {
+        isTalking = false;
         isDead = true;
         SetTransitiveResponse("what", () => {return name + "'s dead body lies on the floor.";});
         SetTransitiveResponse("look", null);

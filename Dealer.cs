@@ -49,7 +49,7 @@ public class Dealer : GameObject
             if (!proven)
             {
                 proven = true;
-                phrase += " A little music would make it more lively in here, don't you think?'\n A strange looking coin" +
+                phrase += " A little music would make it more lively in here, don't you think?'\nA strange looking coin" +
                     " appears between the dealer's fingers, then jumps out towards you. You catch it.";
                 
                 GameObject quarter = new GameObject("quarter");

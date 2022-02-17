@@ -11,14 +11,14 @@ public class Backroom : Room
     Goon letta = new Goon("letta", 0.6f);
     Goon skinner = new Goon("skinner", 0.8f);
 
-    public static string on_enter = "Bingo. You open the door to find three Brotherhood goons sitting around a table. Familiar faces"
+    public static string on_enter = "Bingo. The door opens to a long staircase. You climb down and find three Brotherhood goons sitting around a table. Familiar faces"
     + " as it turns out. They see you pull a gun from the holster on your left hip and scatter as you open fire. As gunshots turn to"
     + " clicks you flip the table over and crouch down behind it. Then you draw the gun from the holster on your right hip. Show time.";
 
     public Backroom(SPlayer player) : base("backroom")
     {
-        description = "The room behind the door is pretty sparse. A single LIGHTBULB hangs from the ceiling, making it feel like a basement."
-            + " The door back to the SALOON stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
+        description = "The basement is pretty sparse. A single LIGHTBULB hangs from the ceiling."
+            + " The door to the STAIRWELL stands slightly ajar behind you; there's a door that must lead to a BACK ALLEY at the back.";
 
         this.player = player;
         player.State = fightState;
@@ -61,12 +61,14 @@ public class Backroom : Room
             cabinet.SetTransitiveResponse("what", () => {
                 return "Looks like the Brotherhood likes to keep their files in order.";
             });
+            cabinet.SetTransitiveResponse("shoot", () => {return null;});
         AddObject(cabinet);
 
         GameObject couch = new GameObject("couch");
             couch.SetTransitiveResponse("what", () => {
                 return "An old brown couch with a few stains. You could have sworn you'd seen one just like it before.";
             });
+            couch.SetTransitiveResponse("shoot", () => {return "The bullet hits the couch with a thud.";});
         AddObject(couch);
 
         GameObject bulb = new GameObject("lightbulb");
@@ -324,12 +326,12 @@ public class Backroom : Room
                     return "You leave " + survivor + " behind and dash out to the alley.";
             }
         }
-        else if (exit == "saloon")
+        else if (exit == "stairwell")
         {
             switch (survivor)
             {
                 case "notsafe":
-                    return "You don't think you could make it to the saloon door safely.";
+                    return "You don't think you could make it to the stairwell door safely.";
                 case "none":
                     return "Probably best to leave out the back.";
                 default:
@@ -349,7 +351,7 @@ public class Backroom : Room
         if (exit == "saloon")
         {
             player.AddWaypoint("endB");
-            return "You slip back into the saloon as quietly as possible and then book it to the door.";
+            return "You climb the stairs, slip back into the saloon as quietly as possible, and then book it to the door.";
         }
         else if (exit == "back alley")
         {

@@ -88,7 +88,7 @@ public class BlackJack
 
         if (player.HasWaypoint("stage4"))
         {
-            return "The dealer places a " + CardName(newCard) + " on the table and gives you the briefest glance. Better not hit again." +
+            return "The dealer places a " + CardName(newCard) + " on the table and gives you the briefest glance." +
                 "\n" + Stay();
         }
         else
@@ -217,7 +217,7 @@ public class BlackJack
             }
             else
             {
-                return "You only have " + player.GetCounter("money") + "D to wager.";
+                return "You only have " + player.GetCounter("money") + "Ð to wager.";
             }
         }
         else

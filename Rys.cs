@@ -6,7 +6,7 @@ public class Rys : GameObject
     public Rys(SPlayer player) : base("rys")
     {
         SetTransitiveResponse("look", () => {
-            return " RYS sits at one of the tables, smirking, nursing his tequila.";
+            return "RYS sits at one of the tables, smirking, nursing his tequila.";
         });
 
         SetTransitiveResponse("what", () => {

@@ -58,6 +58,13 @@ public class Saloon : Room
         //Door
         AddObject(new Door(player));
 
+        //Keypad
+        GameObject keypad = new GameObject("keypad");
+            keypad.SetTransitiveResponse("what", () => {
+                return "A keypad with physical number keys, 0-9.";
+            });
+        AddObject(keypad);
+
         //Players
         GameObject table = new GameObject("table");
             table.SetTransitiveResponse("what", () => {
