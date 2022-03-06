@@ -9,7 +9,9 @@ public class Game
 
     public World SetWorld()
     {
-        world.start = "You come to in the back seat of the cab as it comes to a stop. You're here.\n(Type 'help' if you ever feel stuck)";
+        world.start = "(Type 'help' to see the current list of available commands. You can take different actions in different contexts, " + 
+            "so make sure to check back as the game progresses and whenever you feel stuck.)\n\n" +
+            "You come to in the back seat of the cab as it comes to a stop. You're here.";
         world.player = player;
         
         world.AddIntransitiveCommand("help", Help, State.Default);
