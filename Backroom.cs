@@ -230,14 +230,13 @@ public class Backroom : Room
     void UseAmmo()
     {
         int ammo = player.IncrementCounter("ammo", -1);
-        string count = "";
         if (ammo == 0 && (!(kwin.IsDead && letta.IsDead && skinner.IsDead)))
         {
             player.AddWaypoint("failDeath");
         }
         else
         {
-            count = ammo == 1 ? " shot left." : " shots left.";
+            string count = ammo == 1 ? " shot left." : " shots left.";
             count = ammo + count;
             Parser.GetParser.AddAfterword(count);
         }        
@@ -261,8 +260,8 @@ public class Backroom : Room
                 }
                 else
                 {
-                    UseAmmo();
                     string response = shoot();
+                    UseAmmo();
                     return response == null ? "The bullet ricochets off the " + target + "." : response;
                 }
             }
