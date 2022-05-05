@@ -29,10 +29,6 @@ public class Backroom : Room
         World.GetWorld.AddTransitiveCommand("enter", DarkScram, darkState, "Enter where?");
         World.GetWorld.AddIntransitiveCommand("help", Help, fightState.Compose(darkState));
 
-        GameObject can = new GameObject("can");
-        can.SetTransitiveResponse("shoot", () => {return "clang";});
-        AddObject(can);
-
         kwin.SetTransitiveResponse("what", () => {
             return "A skinny Brotherhood goon. You think they might have shot you before, or maybe that was Letta.";
         });
