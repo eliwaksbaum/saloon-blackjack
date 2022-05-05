@@ -173,13 +173,11 @@ public class Backroom : Room
     }
     string kTalk()
     {
-        if (kwin.GetCondition("spooked"))
+        if (!(skinner.IsDead && letta.IsDead))
         {
-            return "It doesn't look like Kwin heard you, too busy flailing under the gas.";
-        }
-        else if (!(skinner.IsDead && letta.IsDead))
-        {
-            return "Kwin gives you a gesture that makes you think they're not interested in talking.";
+
+            return kwin.GetCondition("spooked") ? "It doesn't look like Kwin heard you, too busy flailing under the gas."
+                : "Kwin gives you a gesture that makes you think they're not interested in talking.";
         }
         else
         {
